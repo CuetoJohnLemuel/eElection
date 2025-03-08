@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voter Dashboard</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"> <!-- Bootstrap CSS -->
+    <script src="bootstrap/js/bootstrap.bundle.min.js"></script> <!-- Bootstrap JS -->
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Voter Panel</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="@Url.Action("Home", "Voter")">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="@Url.Action("ViewElections", "Voter")">View Elections</a></li>
+                    <li class="nav-item"><a class="nav-link" href="@Url.Action("MyVotes", "Voter")">My Votes</a></li>
+                    <li class="nav-item">
+                        <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline;">
+                            <button type="submit" class="nav-link btn btn-link" style="border:none; background:none; cursor:pointer;">
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="container mt-4">
+        <h2>Welcome, Voter</h2>
+        <p>This is your voter dashboard. You can view elections, vote, and check results.</p>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card text-white bg-primary mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Upcoming Elections</h5>
+                        <p class="card-text">3 Elections Available</p> <!-- Replace with dynamic data -->
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-success mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Votes Cast</h5>
+                        <p class="card-text">1 Vote Submitted</p> <!-- Replace with dynamic data -->
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-warning mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Results Available</h5>
+                        <p class="card-text">2 Elections Completed</p> <!-- Replace with dynamic data -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

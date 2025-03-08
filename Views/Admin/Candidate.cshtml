@@ -1,0 +1,38 @@
+﻿@model Candidate
+
+@{
+    ViewData["Title"] = "Create Candidate";
+}
+
+<h2>Create Candidate</h2>
+
+<form asp-controller="Admin" asp-action="AddCandidate" method="post">
+    <div class="form-group">
+        <label asp-for="ElectionId" class="control-label">Election</label>
+        <select asp-for="ElectionId" class="form-control" asp-items="ViewBag.Elections"></select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="VoterId" class="control-label">Candidate</label>
+        <select asp-for="VoterId" class="form-control" asp-items="ViewBag.Voters"></select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PartyId" class="control-label">Party</label>
+        <select asp-for="PartyId" class="form-control" asp-items="ViewBag.Parties"></select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PositionId" class="control-label">Position</label>
+        <select asp-for="PositionId" class="form-control" asp-items="ViewBag.Positions"></select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Biography" class="control-label">Biography</label>
+        <textarea asp-for="Biography" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>
