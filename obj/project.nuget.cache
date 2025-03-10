@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "QOyOYHLSxWQ=",
+  "dgSpecHash": "8Fq2JqoNY9c=",
   "success": true,
-  "projectFilePath": "D:\\LEMUEL\\C#Project\\eElection\\eElection\\eElection.csproj",
+  "projectFilePath": "D:\\LEMUEL\\C#Project\\gitEElection\\eElection\\eElection.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Lenovo\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Lenovo\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

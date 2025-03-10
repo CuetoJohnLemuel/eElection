@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\LEMUEL\\C#Project\\eElection\\eElection\\eElection.csproj": {}
+    "D:\\LEMUEL\\C#Project\\gitEElection\\eElection\\eElection.csproj": {}
   },
   "projects": {
-    "D:\\LEMUEL\\C#Project\\eElection\\eElection\\eElection.csproj": {
+    "D:\\LEMUEL\\C#Project\\gitEElection\\eElection\\eElection.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\LEMUEL\\C#Project\\eElection\\eElection\\eElection.csproj",
+        "projectUniqueName": "D:\\LEMUEL\\C#Project\\gitEElection\\eElection\\eElection.csproj",
         "projectName": "eElection",
-        "projectPath": "D:\\LEMUEL\\C#Project\\eElection\\eElection\\eElection.csproj",
+        "projectPath": "D:\\LEMUEL\\C#Project\\gitEElection\\eElection\\eElection.csproj",
         "packagesPath": "C:\\Users\\Lenovo\\.nuget\\packages\\",
-        "outputPath": "D:\\LEMUEL\\C#Project\\eElection\\eElection\\obj\\",
+        "outputPath": "D:\\LEMUEL\\C#Project\\gitEElection\\eElection\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

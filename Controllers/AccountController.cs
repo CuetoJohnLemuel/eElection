@@ -161,7 +161,7 @@ namespace eElection.Controllers
                 user.EmailConfirmationToken = string.Empty; // Use empty string instead of null
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Verify successful! You can now login.";
-                return View("Login");
+                return View("Logins");
             }
             return View("EmailConfirmationFailed");
         }
@@ -286,7 +286,7 @@ namespace eElection.Controllers
 
                         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-                        return RedirectToAction("Home", "User");  // Redirect voters to Profile page
+                        return RedirectToAction("Homes", "User");  // Redirect voters to Profile page
                     }
                     else
                     {

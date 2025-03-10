@@ -23,7 +23,25 @@
     <link rel="stylesheet" href="~/assets/css/style.css">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="~/assets/images/favicon.png" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 </head>
+<style>
+    /* Fix alignment for Select2 */
+    .select2-container .select2-selection--single {
+        height: 38px; /* Match the height of other form controls */
+        padding: 6px 12px; /* Match Bootstrap's form control padding */
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 24px; /* Match Bootstrap's line height */
+        padding-left: 0; /* Remove extra padding */
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px; /* Match the height of the selection box */
+    }
+</style>
 <body>
     <div class="container-scroller">
         <!-- partial:partials/_navbar.html -->
@@ -180,7 +198,6 @@
 
                 </div>
 
-
                 <!-- Modal for Adding Candidate -->
                 <div class="modal fade" id="addCandidateModal" tabindex="-1" aria-labelledby="addCandidateModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -191,10 +208,10 @@
                             </div>
                             <div class="modal-body">
                                 <form id="addCandidateForm">
+                                    <!-- Election Dropdown -->
                                     <div class="mb-3">
                                         <label for="electionId" class="form-label">Election</label>
-                                        <select class="form-control" id="electionId" name="electionId" required>
-                                            <option value="">Select Election</option>
+                                        <select class="form-control select2" id="electionId" name="electionId" required>
                                             @foreach (var election in ViewBag.Elections)
                                             {
                                                 <option value="@election.Value">@election.Text</option>
@@ -202,10 +219,10 @@
                                         </select>
                                     </div>
 
+                                    <!-- Voter Dropdown -->
                                     <div class="mb-3">
                                         <label for="voterId" class="form-label">Voter</label>
-                                        <select class="form-control" id="voterId" name="voterId" required>
-                                            <option value="">Select Voter</option>
+                                        <select class="form-control select2" id="voterId" name="voterId" required>
                                             @foreach (var voter in ViewBag.Voters)
                                             {
                                                 <option value="@voter.Value">@voter.Text</option>
@@ -213,10 +230,10 @@
                                         </select>
                                     </div>
 
+                                    <!-- Party Dropdown -->
                                     <div class="mb-3">
                                         <label for="partyId" class="form-label">Party</label>
-                                        <select class="form-control" id="partyId" name="partyId" required>
-                                            <option value="">Select Party</option>
+                                        <select class="form-control select2" id="partyId" name="partyId" required>
                                             @foreach (var party in ViewBag.Parties)
                                             {
                                                 <option value="@party.Value">@party.Text</option>
@@ -224,10 +241,10 @@
                                         </select>
                                     </div>
 
+                                    <!-- Position Dropdown -->
                                     <div class="mb-3">
                                         <label for="positionId" class="form-label">Position</label>
-                                        <select class="form-control" id="positionId" name="positionId" required>
-                                            <option value="">Select Position</option>
+                                        <select class="form-control select2" id="positionId" name="positionId" required>
                                             @foreach (var position in ViewBag.Positions)
                                             {
                                                 <option value="@position.Value">@position.Text</option>
@@ -235,11 +252,13 @@
                                         </select>
                                     </div>
 
+                                    <!-- Biography Textarea -->
                                     <div class="mb-3">
                                         <label for="biography" class="form-label">Biography</label>
                                         <textarea class="form-control" id="biography" name="biography" rows="3" required></textarea>
                                     </div>
 
+                                    <!-- Submit Button -->
                                     <button type="submit" class="btn btn-success">Save Candidate</button>
                                 </form>
                             </div>
@@ -262,7 +281,7 @@
 
                                     <div class="mb-3">
                                         <label for="editElectionId" class="form-label">Election</label>
-                                        <select class="form-control" id="editElectionId" name="electionId" required>
+                                        <select class="form-control select2" id="editElectionId" name="electionId" required>
                                             <option value="">Select Election</option>
                                             @foreach (var election in ViewBag.Elections)
                                             {
@@ -273,7 +292,7 @@
 
                                     <div class="mb-3">
                                         <label for="editVoterId" class="form-label">Voter</label>
-                                        <select class="form-control" id="editVoterId" name="voterId" required>
+                                        <select class="form-control select2" id="editVoterId" name="voterId" required>
                                             <option value="">Select Voter</option>
                                             @foreach (var voter in ViewBag.Voters)
                                             {
@@ -284,7 +303,7 @@
 
                                     <div class="mb-3">
                                         <label for="editPartyId" class="form-label">Party</label>
-                                        <select class="form-control" id="editPartyId" name="partyId" required>
+                                        <select class="form-control select2" id="editPartyId" name="partyId" required>
                                             <option value="">Select Party</option>
                                             @foreach (var party in ViewBag.Parties)
                                             {
@@ -295,7 +314,7 @@
 
                                     <div class="mb-3">
                                         <label for="editPositionId" class="form-label">Position</label>
-                                        <select class="form-control" id="editPositionId" name="positionId" required>
+                                        <select class="form-control select2" id="editPositionId" name="positionId" required>
                                             <option value="">Select Position</option>
                                             @foreach (var position in ViewBag.Positions)
                                             {
@@ -330,6 +349,65 @@
         </div>
         <!-- page-body-wrapper ends -->
     </div>
+
+    <!-- Include jQuery (required for Select2) -->
+    <!-- Include Select2 CSS and JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- Initialize Select2 -->
+    <script>
+             $(document).ready(function() {
+            // Initialize Select2 on all dropdowns
+            $('.select2').select2({
+                placeholder: "Select an option",
+                allowClear: true
+            });
+
+            // Ensure Select2 works inside the modal
+            $('#addCandidateModal').on('shown.bs.modal', function () {
+                $('.select2').each(function() {
+                    $(this).select2({
+                        dropdownParent: $(this).closest('.modal')
+                    });
+                });
+            });
+        });
+    </script>
+
+    <script>
+             $(document).ready(function() {
+            // Initialize Select2 on all dropdowns
+            $('.select2').select2({
+                placeholder: "Select an option",
+                allowClear: true
+            });
+
+            // Ensure Select2 works inside the modal
+            $('#editCandidateModal').on('shown.bs.modal', function () {
+                $('.select2').each(function() {
+                    $(this).select2({
+                        dropdownParent: $(this).closest('.modal')
+                    });
+                });
+            });
+        });
+    </script>
+
+
+
+    <script>
+                $(document).ready(function() {
+            $('.select2').select2({
+                placeholder: "Select an option", // Placeholder text
+                allowClear: true // Allow clearing the selection
+            });
+        });
+    </script>
+
     <script>
         document.getElementById("addCandidateForm").addEventListener("submit", function(event) {
             event.preventDefault(); // Prevent default form submission
@@ -563,6 +641,11 @@
     <!-- endinject -->
     <!-- Custom js for this page -->
     <script src="~/assets/js/dashboard.js"></script>
+    <!-- jQuery (required for Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
     <!-- End custom js for this page -->
     <!-- Main Content -->
     <div class="content" id="content">
@@ -571,5 +654,7 @@
             @* @RenderBody() *@
         </main>
     </div>
+
+
 </body>
 </html>
