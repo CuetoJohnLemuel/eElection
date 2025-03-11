@@ -30,7 +30,15 @@ namespace eElection.Controllers
         {
             return View();
         }
+        public IActionResult ResendEmail()
+        {
+            return View();
+        }
         public IActionResult Register()
+        {
+            return View();
+        }
+        public IActionResult ForgotPassword()
         {
             return View();
         }
@@ -152,7 +160,7 @@ namespace eElection.Controllers
             return RedirectToAction("Logins");
         }
 
-        public async Task<IActionResult> ConfirmEmail(string email, string token)
+        public async Task<IActionResult> ConfirmEmailss(string email, string token)
         {
             var user = _context.Account.FirstOrDefault(u => u.Email == email && u.EmailConfirmationToken == token);
             if (user != null)
@@ -165,6 +173,75 @@ namespace eElection.Controllers
             }
             return View("EmailConfirmationFailed");
         }
+
+        public async Task<IActionResult> ConfirmEmail(string email, string token)
+        {
+            // Find the user by email and token
+            var user = _context.Account.FirstOrDefault(u => u.Email == email && u.EmailConfirmationToken == token);
+
+            if (user != null)
+            {
+                // Check if the email is already confirmed
+                if (user.IsEmailConfirmed)
+                {
+                    TempData["ErrorMessage"] = "Email is already confirmed. You can now login.";
+                    return View("Logins"); // Or redirect to a specific view for already confirmed emails
+                }
+
+                // If not confirmed, proceed with confirmation
+                user.IsEmailConfirmed = true;
+                user.EmailConfirmationToken = string.Empty; // Clear the token
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Email verified successfully! You can now login.";
+                return View("Logins"); // Redirect to the login page
+            }
+
+            // If the user is not found, show a failure message
+            ViewBag.ErrorMessage = "Invalid email or token. Please try again.";
+            return View("ResendEmail");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResendEmail(string email)
+        {
+            // Find the user by email
+            var user = _context.Account.FirstOrDefault(u => u.Email == email);
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = "User not found. Please check your email address.";
+                return RedirectToAction("Logins"); // Redirect to login or a specific view
+            }
+
+            // Check if the email is already confirmed
+            if (user.IsEmailConfirmed)
+            {
+                ViewBag.ErrorMessage = "Email is already confirmed. You can now login.";
+                return RedirectToAction("Logins"); // Redirect to login or a specific view
+            }
+
+            // Generate a new confirmation token
+            user.EmailConfirmationToken = Guid.NewGuid().ToString();
+            await _context.SaveChangesAsync();
+
+            // Send the new confirmation email
+            var confirmationLink = Url.Action("ConfirmEmail", "Account",
+                new { email = user.Email, token = user.EmailConfirmationToken }, Request.Scheme);
+
+            string emailBody = $@"
+            <h2>Hello, {user.Username}!</h2>
+            <p>We received a request to resend your email confirmation link.</p>
+            <a href='{confirmationLink}' style='padding:10px 20px; background-color:blue; color:white; text-decoration:none;'>Confirm Email</a>";
+
+            await _emailService.SendEmailAsync(user.Email, "Confirm Your Email", emailBody);
+
+            // Store success message in TempData
+            ViewBag.ErrorMessage = "A new confirmation email has been sent. Please check your inbox.";
+
+            return RedirectToAction("Logins"); // Redirect to login or a specific view
+        }
+
         public IActionResult Login()
         {
             return View();
@@ -315,5 +392,83 @@ namespace eElection.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Logins", "Account"); // Redirect to login page
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                ModelState.AddModelError("Email", "Email is required.");
+                return View();
+            }
+
+            var user = await _context.Account.FirstOrDefaultAsync(a => a.Email == email);
+            if (user == null)
+            {
+                ModelState.AddModelError("Email", "No account found with this email.");
+                return View();
+            }
+
+            // Generate Reset Token (Use a GUID)
+            user.EmailConfirmationToken = Guid.NewGuid().ToString();
+            await _context.SaveChangesAsync();
+
+            // Generate Reset Link
+            var resetLink = Url.Action("ResetPassword", "Account",
+                new { email = user.Email, token = user.EmailConfirmationToken }, Request.Scheme);
+
+            // Email Body
+            string emailBody = $@"
+<h2>Password Reset Request</h2>
+<p>Click the button below to reset your password.</p>
+<a href='{resetLink}' style='padding:10px 20px; background-color:red; color:white; text-decoration:none;'>Reset Password</a>
+<p>If you did not request this, ignore this email.</p>";
+
+            await _emailService.SendEmailAsync(user.Email, "Reset Your Password", emailBody);
+
+            TempData["SuccessMessage"] = "A password reset link has been sent to your email.";
+            return RedirectToAction("Logins");
+        }
+
+
+        [HttpGet]
+        public IActionResult ResetPassword(string email, string token)
+        {
+            var user = _context.Account.FirstOrDefault(a => a.Email == email && a.EmailConfirmationToken == token);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "Invalid or expired password reset token.";
+                return RedirectToAction("Logins");
+            }
+
+            return View(new ResetPasswordViewModel { Email = email, Token = token });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _context.Account.FirstOrDefaultAsync(a => a.Email == model.Email && a.EmailConfirmationToken == model.Token);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "Invalid or expired token.";
+                return RedirectToAction("Logins");
+            }
+
+            // Hash the new password before saving
+            user.Password = _passwordHasher.HashPassword(user, model.NewPassword);
+            user.EmailConfirmationToken = null; // Clear token
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Password reset successful! You can now log in.";
+            return RedirectToAction("Logins");
+        }
+
+
     }
 }

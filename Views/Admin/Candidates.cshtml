@@ -159,7 +159,11 @@
                                         <table class="table">
                                             <thead>
                                                 <tr>
+                                                    <th> Election Name </th>
                                                     <th> Candidate Name </th>
+                                                    <th> Party Name </th>
+                                                    <th> Position Name </th>
+                                                    <th> Biography </th>
                                                     <th> Action </th>
                                                 </tr>
                                             </thead>
@@ -221,7 +225,7 @@
 
                                     <!-- Voter Dropdown -->
                                     <div class="mb-3">
-                                        <label for="voterId" class="form-label">Voter</label>
+                                        <label for="voterId" class="form-label">Candidate</label>
                                         <select class="form-control select2" id="voterId" name="voterId" required>
                                             @foreach (var voter in ViewBag.Voters)
                                             {
@@ -291,7 +295,7 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="editVoterId" class="form-label">Voter</label>
+                                        <label for="editVoterId" class="form-label">Candidate</label>
                                         <select class="form-control select2" id="editVoterId" name="voterId" required>
                                             <option value="">Select Voter</option>
                                             @foreach (var voter in ViewBag.Voters)
