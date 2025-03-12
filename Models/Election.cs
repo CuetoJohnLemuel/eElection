@@ -12,6 +12,9 @@ namespace eElection.Models
         public string ElectionName { get; set; }
 
         [Required]
+        public string ElectionTypes { get; set; } // Store selected types as comma-separated values (CSV)
+
+        [Required]
         [DataType(DataType.Date)]
         public DateTime StartDate { get; set; }
 

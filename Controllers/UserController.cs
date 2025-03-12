@@ -25,6 +25,12 @@ namespace eElection.Controllers
         }
 
         [Authorize(Roles = "Voter")]
+        public IActionResult Ballot()
+        {
+            return View();
+        }
+
+        [Authorize(Roles = "Voter")]
         public IActionResult Homes()
         {
             // Get the count of voters
@@ -105,36 +111,46 @@ namespace eElection.Controllers
             // Pass the voter data to the view
             return View(voter);
         }
-        [HttpPost]
-        public IActionResult UpdateProfile([FromBody] Voter model)
+       [HttpPost]
+        public IActionResult UpdateProfile([FromBody] Voter updatedVoter)
         {
-            // Get the VoterId from the claims
-            var voterIdClaim = User.FindFirst("VoterId");
-            if (voterIdClaim == null)
+            if (updatedVoter == null)
             {
-                return Unauthorized(); // Handle unauthorized access
+                return Json(new { success = false, message = "Invalid data received." });
             }
 
-            int voterId = int.Parse(voterIdClaim.Value);
-
-            // Fetch the voter profile from the database
-            var voter = _context.Voters
-                .FirstOrDefault(v => v.VoterId == voterId);
-
+            var voter = _context.Voters.FirstOrDefault(v => v.VoterId == updatedVoter.VoterId);
             if (voter == null)
             {
-                return Json(new { success = false, message = "Voter not found." });
+                return Json(new { success = false, message = "User not found." });
             }
 
-            // Update the voter's profile
-            voter.FirstName = model.FirstName;
-            voter.LastName = model.LastName;
-            voter.Phone = model.Phone;
-            voter.Address = model.Address;
+            try
+            {
+                // Update voter details
+                voter.FirstName = updatedVoter.FirstName;
+                voter.LastName = updatedVoter.LastName;
+                voter.Phone = updatedVoter.Phone;
+                voter.Address = updatedVoter.Address;
+                voter.Birthdate = updatedVoter.Birthdate; // Ensure birthdate is not null
+                voter.Gender = updatedVoter.Gender; // Ensure gender is updated
 
-            _context.SaveChanges();
 
-            return Json(new { success = true, message = "Profile updated successfully!" });
+                // Check if email needs to be updated in the Account table
+                // var account = _context.Account.FirstOrDefault(a => a.AccountId == voter.AccountId);
+                if (voter.Account != null)
+                {
+                    voter.Account.Email = updatedVoter.Email;
+                }
+                _context.SaveChanges();
+
+                return Json(new { success = true, message = "Profile updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error updating profile: " + ex.Message });
+            }
         }
+
     }
 }

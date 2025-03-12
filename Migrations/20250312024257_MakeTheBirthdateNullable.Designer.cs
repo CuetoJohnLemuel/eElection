@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eElection.Data;
 
@@ -11,9 +12,11 @@ using eElection.Data;
 namespace eElection.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250312024257_MakeTheBirthdateNullable")]
+    partial class MakeTheBirthdateNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,9 +60,7 @@ namespace eElection.Migrations
 
                     b.HasKey("AccountId");
 
-                    b.HasIndex("VoterId")
-                        .IsUnique()
-                        .HasFilter("[VoterId] IS NOT NULL");
+                    b.HasIndex("VoterId");
 
                     b.ToTable("Account");
                 });
@@ -150,10 +151,6 @@ namespace eElection.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("ElectionTypes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
@@ -228,6 +225,9 @@ namespace eElection.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VoterId"));
 
+                    b.Property<int?>("AccountId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -278,14 +278,16 @@ namespace eElection.Migrations
 
                     b.HasKey("VoterId");
 
+                    b.HasIndex("AccountId");
+
                     b.ToTable("Voters");
                 });
 
             modelBuilder.Entity("eElection.Models.Account", b =>
                 {
                     b.HasOne("eElection.Models.Voter", "Voter")
-                        .WithOne("Account")
-                        .HasForeignKey("eElection.Models.Account", "VoterId");
+                        .WithMany()
+                        .HasForeignKey("VoterId");
 
                     b.Navigation("Voter");
                 });
@@ -325,6 +327,15 @@ namespace eElection.Migrations
                     b.Navigation("Voter");
                 });
 
+            modelBuilder.Entity("eElection.Models.Voter", b =>
+                {
+                    b.HasOne("eElection.Models.Account", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountId");
+
+                    b.Navigation("Account");
+                });
+
             modelBuilder.Entity("eElection.Models.Election", b =>
                 {
                     b.Navigation("Candidates");
@@ -342,8 +353,6 @@ namespace eElection.Migrations
 
             modelBuilder.Entity("eElection.Models.Voter", b =>
                 {
-                    b.Navigation("Account");
-
                     b.Navigation("Candidates");
                 });
 #pragma warning restore 612, 618

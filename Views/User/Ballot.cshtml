@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>eElection</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+
+    <!-- Favicons -->
+    <link href="~/assetss/img/favicon.png" rel="icon">
+    <link href="~/assetss/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="~/assetss/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~/assetss/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="~/assetss/vendor/aos/aos.css" rel="stylesheet">
+    <link href="~/assetss/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="~/assetss/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+    <!-- Main CSS File -->
+    <link href="~/assetss/css/main.css" rel="stylesheet">
+
+    <!-- =======================================================
+    * Template Name: eNno
+    * Template URL: https://bootstrapmade.com/enno-free-simple-bootstrap-template/
+    * Updated: Aug 07 2024 with Bootstrap v5.3.3
+    * Author: BootstrapMade.com
+    * License: https://bootstrapmade.com/license/
+    ======================================================== -->
+</head>
+
+<body class="index-page">
+
+    <header id="header" class="header d-flex align-items-center sticky-top">
+        <div class="container-fluid container-xl position-relative d-flex align-items-center">
+
+            <a href="index.html" class="logo d-flex align-items-center me-auto">
+                <!-- Uncomment the line below if you also wish to use an image logo -->
+                <!-- <img src="~/assetss/img/logo.png" alt=""> -->
+                <h1 class="sitename">eElection</h1>
+            </a>
+
+            <nav id="navmenu" class="navmenu">
+                <ul>
+                    <li><a asp-controller="User" asp-action="Homes">Home</a></li>
+                    <li><a asp-controller="User" asp-action="Candidate">Candidate</a></li>
+                    <li><a asp-controller="User" asp-action="Profile">Profile</a></li>
+                    @* <li><a asp-controller="User" asp-action="Logout">Logout</a></li> *@
+                    <li class="nav-item dropdown">
+                        <form id="logoutForm" asp-controller="Admin" asp-action="Logout" method="post" style="display: none;">
+                            <button type="submit"></button>
+                        </form>
+                        <a class="dropdown-item" href="#" onclick="document.getElementById('logoutForm').submit(); return false;">
+                            <i class="mdi mdi-logout me-2 text-primary"></i> Signout
+                        </a>
+                    </li>
+                </ul>
+                <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+            </nav>
+
+
+        </div>
+    </header>
+    <main class="main container py-4">
+        <div class="row">
+            <!-- Ballot Forms -->
+            <div class="col-md-8">
+                <!-- National Positions -->
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">National Positions</div>
+                    <div class="card-body">
+                        <table class="table table-sm">
+                            <tr>
+                                <td>President</td>
+                                <td>
+                                    <select class="form-select" id="president" onchange="updateSelection('President', this.value)">
+                                        <option value="">Select Candidate</option>
+                                        <option value="Candidate A">Candidate A</option>
+                                        <option value="Candidate B">Candidate B</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Vice President</td>
+                                <td>
+                                    <select class="form-select" id="vp" onchange="updateSelection('Vice President', this.value)">
+                                        <option value="">Select Candidate</option>
+                                        <option value="Candidate X">Candidate X</option>
+                                        <option value="Candidate Y">Candidate Y</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Regional Positions -->
+                <div class="card">
+                    <div class="card-header bg-success text-white">Regional Positions</div>
+                    <div class="card-body">
+                        <table class="table table-sm">
+                            <tr>
+                                <td>Governor</td>
+                                <td>
+                                    <select class="form-select" id="governor" onchange="updateSelection('Governor', this.value)">
+                                        <option value="">Select Candidate</option>
+                                        <option value="Candidate M">Candidate M</option>
+                                        <option value="Candidate N">Candidate N</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Vice Governor</td>
+                                <td>
+                                    <select class="form-select" id="vicegovernor" onchange="updateSelection('Vice Governor', this.value)">
+                                        <option value="">Select Candidate</option>
+                                        <option value="Candidate P">Candidate P</option>
+                                        <option value="Candidate Q">Candidate Q</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selected Candidates Panel -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">Your Selection</div>
+                    <div class="card-body">
+                        <ul id="selectedCandidates" class="list-group"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+
+
+    <!-- Scroll Top -->
+    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+    <!-- Preloader -->
+    <div id="preloader"></div>
+
+
+    <script>
+        function updateSelection(position, candidate) {
+            let selectionList = document.getElementById("selectedCandidates");
+            let existingItem = document.getElementById("selection-" + position);
+
+            if (existingItem) {
+                existingItem.innerHTML = `<strong>${position}:</strong> ${candidate}`;
+            } else {
+                let li = document.createElement("li");
+                li.id = "selection-" + position;
+                li.classList.add("list-group-item");
+                li.innerHTML = `<strong>${position}:</strong> ${candidate}`;
+                selectionList.appendChild(li);
+            }
+        }
+    </script>
+
+    <!-- Vendor JS Files -->
+    <script src="~/assetss/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/assetss/vendor/php-email-form/validate.js"></script>
+    <script src="~/assetss/vendor/aos/aos.js"></script>
+    <script src="~/assetss/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="~/assetss/vendor/purecounter/purecounter_vanilla.js"></script>
+    <script src="~/assetss/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+    <script src="~/assetss/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+    <script src="~/assetss/vendor/swiper/swiper-bundle.min.js"></script>
+
+    <!-- Main JS File -->
+    <script src="~/assetss/js/main.js"></script>
+
+</body>
+
+</html>

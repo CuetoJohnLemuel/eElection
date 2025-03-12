@@ -127,6 +127,9 @@ namespace eElection.Controllers
                 Email = model.Email,
                 Phone = "", // Add phone if needed
                 Address = "", // Add address if needed
+                Gender = "",
+                ProfilePhoto = "",
+                Birthdate = DateOnly.FromDateTime(DateTime.UtcNow),
                 CreatedAt = DateTime.UtcNow
             };
 

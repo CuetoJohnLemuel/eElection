@@ -269,7 +269,7 @@ namespace eElection.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddElection([FromBody] Election model)
+        public IActionResult AddElectionist([FromBody] Election model)
         {
             if (!ModelState.IsValid)
             {
@@ -289,6 +289,29 @@ namespace eElection.Controllers
                 return Json(new { success = false, message = "An error occurred while saving the election." });
             }
         }
+
+        [HttpPost]
+        public IActionResult AddElection([FromBody] Election model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                _context.Elections.Add(model);
+                _context.SaveChanges();
+
+                return Json(new { success = true, message = "Election added successfully!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred while adding the election.", error = ex.Message });
+            }
+        }
+
+
 
         [HttpPost]
         public IActionResult AddAnnouncement([FromBody] Announcement model)

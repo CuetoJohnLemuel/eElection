@@ -29,11 +29,31 @@ namespace eElection.Models
         [StringLength(255)]
         public string Address { get; set; }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow; // Using UTC time for consistency
+        [Required]
+        public DateOnly? Birthdate { get; set; }
 
-        // 🔗 Link to Account
+        [Required]
+        [StringLength(10)]
+        public string Gender { get; set; }
+
+        [Required]
+        [StringLength(255)]
+        public string ProfilePhoto { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        // Approval Process Fields
+        [Required]
+        public string Status { get; set; } = "Pending";
+
+        public string? RejectionReason { get; set; }
+
+        // // Relationships
+        // public int? AccountId { get; set; } // 🔗 Explicit Foreign Key
+        // [ForeignKey("AccountId")]
         public Account? Account { get; set; }
+
         public virtual ICollection<Candidate>? Candidates { get; set; }
     }
 }
