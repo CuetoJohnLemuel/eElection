@@ -25,10 +25,56 @@ namespace eElection.Controllers
         }
 
         [Authorize(Roles = "Voter")]
-        public IActionResult Ballot()
+        public IActionResult Ballot(string electionType)
         {
+            if (string.IsNullOrEmpty(electionType))
+            {
+                return BadRequest("Election type is required.");
+            }
+
+            // Log to server-side console
+            Console.WriteLine($"Election Type received: {electionType}");
+
+            // Pass electionType to View
+            ViewBag.ElectionType = electionType;
             return View();
         }
+
+        [Authorize(Roles = "Voter")]
+        public IActionResult Ballota(string electionType)
+        {
+            if (string.IsNullOrEmpty(electionType))
+            {
+                return NotFound("Election type not found.");
+            }
+
+            Console.WriteLine($"Election Type Received: {electionType}"); // Debugging log
+            ViewBag.ElectionType = electionType;
+            return View();
+        }
+
+
+
+        //[Authorize(Roles = "Voter")]
+        //public IActionResult Elections()
+        //{
+        //    return View();
+        //}
+        [Authorize(Roles = "Voter")]
+        public IActionResult Elections()
+        {
+            var elections = _context.Elections
+                .Select(e => new Election
+                {
+                    ElectionName = e.ElectionName,
+                    ElectionTypes = e.ElectionTypes
+                })
+                .ToList(); // Ensure the model is List<Election>
+
+            return View(elections);
+        }
+
+
 
         [Authorize(Roles = "Voter")]
         public IActionResult Homes()
