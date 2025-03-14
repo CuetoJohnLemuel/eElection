@@ -579,10 +579,12 @@ namespace eElection.Controllers
 
             try
             {
+                // Update properties
                 existingElection.ElectionName = model.ElectionName;
                 existingElection.StartDate = model.StartDate;
                 existingElection.EndDate = model.EndDate;
                 existingElection.Status = model.Status;
+                existingElection.ElectionTypes = model.ElectionTypes; // Add this line
 
                 _context.SaveChanges();
                 return Json(new { success = true, message = "Election updated successfully!" });

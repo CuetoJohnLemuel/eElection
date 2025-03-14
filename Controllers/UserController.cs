@@ -32,13 +32,114 @@ namespace eElection.Controllers
                 return BadRequest("Election type is required.");
             }
 
-            // Log to server-side console
             Console.WriteLine($"Election Type received: {electionType}");
 
-            // Pass electionType to View
+            // Pass the election type to the view
             ViewBag.ElectionType = electionType;
+
             return View();
         }
+
+        //[HttpGet]
+        //public IActionResult GetCandidates(string position)
+        //{
+        //    var candidates = _context.Candidates
+        //        .Where(c => c.Position.PositionName == position)
+        //        .Select(c => new
+        //        {
+        //            c.CandidateId,
+        //            c.Voter.FirstName // Assuming Candidate table has a Voter reference
+        //        })
+        //        .ToList();
+
+        //    return Json(candidates);
+        //}
+
+        [HttpGet]
+        public IActionResult GetCandidatesByPosition(string positionName)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(positionName))
+                {
+                    return Json(new { success = false, message = "Invalid position name." });
+                }
+
+                var candidates = _context.Candidates
+                    .Include(c => c.Voter)
+                    .Include(c => c.Position)
+                    .Where(c => c.Position != null && c.Position.PositionName.ToLower() == positionName.ToLower()) // Case insensitive
+                    .Select(c => new
+                    {
+                        c.CandidateId,
+                        FullName = c.Voter != null ? $"{c.Voter.FirstName} {c.Voter.LastName}" : "Unknown",
+                        Position = c.Position != null ? c.Position.PositionName : "Unknown",
+                        c.PartyId,
+                    })
+                    .ToList();
+
+                if (candidates.Count == 0)
+                {
+                    return Json(new { success = false, message = "No candidates found for this position." });
+                }
+
+                return Json(new { success = true, data = candidates });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching candidates: {ex.Message}");
+                return Json(new { success = false, message = "An error occurred while fetching candidates." });
+            }
+        }
+
+        //[HttpPost]
+        //public IActionResult SubmitVote([FromBody] VoteRequest voteRequest)
+        //{
+        //    try
+        //    {
+        //        if (voteRequest == null)
+        //        {
+        //            return Json(new { success = false, message = "Invalid vote data." });
+        //        }
+
+        //        // Insert vote into database
+        //        var vote = new Vote
+        //        {
+        //            VoterId = 1, // Replace this with the logged-in user's ID
+        //            PresidentId = voteRequest.President,
+        //            VicePresidentId = voteRequest.VicePresident,
+        //            DistrictRepId = voteRequest.DistrictRep,
+        //            PartyListRepId = voteRequest.PartyListRep
+        //        };
+
+        //        _context.Votes.Add(vote);
+        //        _context.SaveChanges();
+
+        //        // Insert multiple senators (since multiple selection is allowed)
+        //        if (voteRequest.Senators != null)
+        //        {
+        //            foreach (var senatorId in voteRequest.Senators)
+        //            {
+        //                _context.VoteDetails.Add(new VoteDetail
+        //                {
+        //                    VoteId = vote.VoteId,
+        //                    CandidateId = senatorId
+        //                });
+        //            }
+        //            _context.SaveChanges();
+        //        }
+
+        //        return Json(new { success = true, message = "Vote submitted successfully." });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Error submitting vote: {ex.Message}");
+        //        return Json(new { success = false, message = "An error occurred while submitting the vote." });
+        //    }
+        //}
+
+
+
 
         [Authorize(Roles = "Voter")]
         public IActionResult Ballota(string electionType)

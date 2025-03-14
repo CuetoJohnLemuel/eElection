@@ -24,7 +24,25 @@
     <!-- End layout styles -->
     <link rel="shortcut icon" href="~/assets/images/favicon.png" />
 </head>
+
 <body>
+    <style>
+        /* Custom CSS for aligning checkboxes and labels */
+        .checkbox-container {
+            padding-left: 1rem; /* Add left padding to the container */
+        }
+
+            .checkbox-container .form-check {
+                display: flex;
+                align-items: center; /* Vertically center the checkbox and label */
+                margin-bottom: 0.5rem; /* Add spacing between checkboxes */
+            }
+
+            .checkbox-container .form-check-input {
+                margin-right: 0.5rem; /* Add spacing between the checkbox and label */
+                flex-shrink: 0; /* Prevent the checkbox from shrinking */
+            }
+    </style>
     <div class="container-scroller">
         <!-- partial:partials/_navbar.html -->
         <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
@@ -192,33 +210,34 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Election Type</label>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="presidential" name="ElectionType" value="Presidential Elections">
-                                            <label class="form-check-label" for="presidential">Presidential Elections</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="midterm" name="ElectionType" value="Midterm Elections">
-                                            <label class="form-check-label" for="midterm">Midterm Elections</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="senatorial" name="ElectionType" value="Senatorial Elections">
-                                            <label class="form-check-label" for="senatorial">Senatorial Elections</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="house" name="ElectionType" value="House of Representatives Elections">
-                                            <label class="form-check-label" for="house">House of Representatives Elections</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="local" name="ElectionType" value="Local Elections">
-                                            <label class="form-check-label" for="local">Local Elections</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="barangay" name="ElectionType" value="Barangay and SK Elections">
-                                            <label class="form-check-label" for="barangay">Barangay and Sangguniang Kabataan (SK) Elections</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="plebiscite" name="ElectionType" value="Plebiscites and Referendums">
-                                            <label class="form-check-label" for="plebiscite">Plebiscites and Referendums</label>
+                                        <!-- Add a container for the checkboxes with custom styling -->
+                                        <div class="checkbox-container ps-3">
+                                            <!-- Added ps-3 for left padding -->
+                                            <div class="form-check mb-2">
+                                                <!-- Added mb-2 for spacing -->
+                                                <input class="form-check-input" type="checkbox" id="national" name="ElectionType" value="National Elections">
+                                                <label class="form-check-label" for="national">National Elections</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="midterm" name="ElectionType" value="Midterm Elections">
+                                                <label class="form-check-label" for="midterm">Midterm Elections</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="regional" name="ElectionType" value="Regional Elections">
+                                                <label class="form-check-label" for="regional">Regional Elections</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="provincial" name="ElectionType" value="Provincial Elections">
+                                                <label class="form-check-label" for="provincial">Provincial Elections</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="cityMunicipality" name="ElectionType" value="City/Municipality Elections">
+                                                <label class="form-check-label" for="cityMunicipality">City/Municipality Elections</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="barangay" name="ElectionType" value="Barangay and SK Elections">
+                                                <label class="form-check-label" for="barangay">Barangay and Sangguniang Kabataan (SK) Elections</label>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -245,43 +264,110 @@
                 </div>
 
                 <!-- Edit Election Modal -->
-                <div class="modal fade" id="editElectionModal" tabindex="-1" aria-labelledby="editElectionModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="editElectionModalLabel">Edit Election</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="modal fade" id="editElectionModal" tabindex="-1" aria-labelledby="editElectionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editElectionModalLabel">Edit Election</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editElectionForm">
+                    <input type="hidden" id="editElectionId">
+                    <div class="mb-3">
+                        <label for="editElectionName" class="form-label">Election Name</label>
+                        <input type="text" class="form-control" id="editElectionName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Election Type</label>
+                        <!-- Add a container for the checkboxes with custom styling -->
+                        <div class="checkbox-container ps-3">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="editNational" name="ElectionType" value="National Elections">
+                                <label class="form-check-label" for="editNational">National Elections</label>
                             </div>
-                            <div class="modal-body">
-                                <form id="editElectionForm">
-                                    <input type="hidden" id="editElectionId">
-                                    <div class="mb-3">
-                                        <label for="editElectionName" class="form-label">Election Name</label>
-                                        <input type="text" class="form-control" id="editElectionName" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="editStartDate" class="form-label">Start Date</label>
-                                        <input type="date" class="form-control" id="editStartDate" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="editEndDate" class="form-label">End Date</label>
-                                        <input type="date" class="form-control" id="editEndDate" required>
-                                    </div>
-                                    
-
-                                    <div class="mb-3">
-                                        <label for="editStatus" class="form-label">Status</label>
-                                        <select class="form-control" id="editStatus">
-                                            <option value="Active">Active</option>
-                                            <option value="Inactive">Inactive</option>
-                                        </select>
-                                    </div>
-                                    <button type="submit" class="btn btn-success">Update Election</button>
-                                </form>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="editMidterm" name="ElectionType" value="Midterm Elections">
+                                <label class="form-check-label" for="editMidterm">Midterm Elections</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="editRegional" name="ElectionType" value="Regional Elections">
+                                <label class="form-check-label" for="editRegional">Regional Elections</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="editProvincial" name="ElectionType" value="Provincial Elections">
+                                <label class="form-check-label" for="editProvincial">Provincial Elections</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="editCityMunicipality" name="ElectionType" value="City/Municipality Elections">
+                                <label class="form-check-label" for="editCityMunicipality">City/Municipality Elections</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="editBarangay" name="ElectionType" value="Barangay and SK Elections">
+                                <label class="form-check-label" for="editBarangay">Barangay and Sangguniang Kabataan (SK) Elections</label>
                             </div>
                         </div>
                     </div>
-                </div>
+                    <div class="mb-3">
+                        <label for="editStartDate" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="editStartDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEndDate" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="editEndDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editStatus" class="form-label">Status</label>
+                        <select class="form-control" id="editStatus">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success">Update Election</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+                @* <!-- Edit Election Modal --> *@
+                @* <div class="modal fade" id="editElectionModal" tabindex="-1" aria-labelledby="editElectionModalLabel" aria-hidden="true"> *@
+                @*     <div class="modal-dialog"> *@
+                @*         <div class="modal-content"> *@
+                @*             <div class="modal-header"> *@
+                @*                 <h5 class="modal-title" id="editElectionModalLabel">Edit Election</h5> *@
+                @*                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> *@
+                @*             </div> *@
+                @*             <div class="modal-body"> *@
+                @*                 <form id="editElectionForm"> *@
+                @*                     <input type="hidden" id="editElectionId"> *@
+                @*                     <div class="mb-3"> *@
+                @*                         <label for="editElectionName" class="form-label">Election Name</label> *@
+                @*                         <input type="text" class="form-control" id="editElectionName" required> *@
+                @*                     </div> *@
+                @*                     <div class="mb-3"> *@
+                @*                         <label for="editStartDate" class="form-label">Start Date</label> *@
+                @*                         <input type="date" class="form-control" id="editStartDate" required> *@
+                @*                     </div> *@
+                @*                     <div class="mb-3"> *@
+                @*                         <label for="editEndDate" class="form-label">End Date</label> *@
+                @*                         <input type="date" class="form-control" id="editEndDate" required> *@
+                @*                     </div> *@
+                                    
+
+                @*                     <div class="mb-3"> *@
+                @*                         <label for="editStatus" class="form-label">Status</label> *@
+                @*                         <select class="form-control" id="editStatus"> *@
+                @*                             <option value="Active">Active</option> *@
+                @*                             <option value="Inactive">Inactive</option> *@
+                @*                         </select> *@
+                @*                     </div> *@
+                @*                     <button type="submit" class="btn btn-success">Update Election</button> *@
+                @*                 </form> *@
+                @*             </div> *@
+                @*         </div> *@
+                @*     </div> *@
+                @* </div> *@
 
                 <!-- content-wrapper ends -->
                 <!-- partial:partials/_footer.html -->
@@ -339,50 +425,63 @@
 
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Edit button click event
-            document.querySelectorAll(".edit-btn").forEach(button => {
-                button.addEventListener("click", function () {
-                    let electionId = this.getAttribute("data-id");
+         document.addEventListener("DOMContentLoaded", function () {
+        // Edit button click event
+        document.querySelectorAll(".edit-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                let electionId = this.getAttribute("data-id");
 
-                    fetch(`/Admin/GetElection?id=${electionId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            document.getElementById("editElectionId").value = data.electionId;
-                            document.getElementById("editElectionName").value = data.electionName;
-                            document.getElementById("editStartDate").value = data.startDate.split("T")[0];
-                            document.getElementById("editEndDate").value = data.endDate.split("T")[0];
-                            document.getElementById("editStatus").value = data.status;
-                            new bootstrap.Modal(document.getElementById("editElectionModal")).show();
+                fetch(`/Admin/GetElection?id=${electionId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Populate form fields
+                        document.getElementById("editElectionId").value = data.electionId;
+                        document.getElementById("editElectionName").value = data.electionName;
+                        document.getElementById("editStartDate").value = data.startDate.split("T")[0];
+                        document.getElementById("editEndDate").value = data.endDate.split("T")[0];
+                        document.getElementById("editStatus").value = data.status;
+
+                        // Populate election type checkboxes
+                        const electionTypes = data.electionTypes.split(",");
+                        document.querySelectorAll("#editElectionForm input[type='checkbox']").forEach(checkbox => {
+                            checkbox.checked = electionTypes.includes(checkbox.value);
                         });
-                });
+
+                        // Show the modal
+                        new bootstrap.Modal(document.getElementById("editElectionModal")).show();
+                    });
             });
+        });
 
-            // Edit Form Submit (AJAX)
-            document.getElementById("editElectionForm").addEventListener("submit", function (event) {
-                event.preventDefault();
+        // Edit Form Submit (AJAX)
+        document.getElementById("editElectionForm").addEventListener("submit", function (event) {
+            event.preventDefault();
 
-                let formData = {
-                    ElectionId: document.getElementById("editElectionId").value,
-                    ElectionName: document.getElementById("editElectionName").value,
-                    StartDate: document.getElementById("editStartDate").value,
-                    EndDate: document.getElementById("editEndDate").value,
-                    Status: document.getElementById("editStatus").value
-                };
-
-                fetch("/Admin/EditElection", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(formData)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.message);
-                    location.reload();
-                })
-                .catch(error => console.error("Error:", error));
+            // Gather form data
+            let formData = {
+                ElectionId: document.getElementById("editElectionId").value,
+                ElectionName: document.getElementById("editElectionName").value,
+                StartDate: document.getElementById("editStartDate").value,
+                EndDate: document.getElementById("editEndDate").value,
+                Status: document.getElementById("editStatus").value,
+                ElectionTypes: Array.from(document.querySelectorAll("#editElectionForm input[type='checkbox']:checked"))
+                    .map(checkbox => checkbox.value)
+                    .join(",") // Convert selected checkboxes to a comma-separated string
+            };
+        // Submit data via AJAX
+            fetch("/Admin/EditElection", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                location.reload();
+            })
+            .catch(error => console.error("Error:", error));
             });
 
             // Delete button click event

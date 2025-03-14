@@ -31,7 +31,7 @@
 
     <!-- Main CSS File -->
     <link href="~/assetss/css/main.css" rel="stylesheet">
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- =======================================================
     * Template Name: eNno
     * Template URL: https://bootstrapmade.com/enno-free-simple-bootstrap-template/
@@ -79,88 +79,7 @@
 
             <!-- Ballot Forms -->
             <div class="col-md-8">
-                @* @if (string.IsNullOrEmpty(electionType)) *@
-                @* { *@
-                @*     <div class="alert alert-danger">No election type selected.</div> *@
-                @* } *@
-                @* else *@
-                @* { *@
-                @*     <!-- National Positions --> *@
-                @*     @if (electionType.Contains("Presidential Elections")) *@
-                @*     { *@
-                @*         <div class="card mb-3 election-section" id="nationalSection"> *@
-                @*             <div class="card-header bg-primary text-white">National Positions</div> *@
-                @*             <div class="card-body"> *@
-                @*                 <p><strong>National Elections (Every 6 Years for President, Every 3 Years for Others)</strong></p> *@
-
-                @*                 <table class="table table-sm"> *@
-                @*                     <tr> *@
-                @*                         <td>President</td> *@
-                @*                         <td> *@
-                @*                             <select class="form-select" id="president"> *@
-                @*                                 <option value="">Select Candidate</option> *@
-                @*                                 <option value="Candidate A">Candidate A</option> *@
-                @*                                 <option value="Candidate B">Candidate B</option> *@
-                @*                             </select> *@
-                @*                         </td> *@
-                @*                     </tr> *@
-                @*                     <tr> *@
-                @*                         <td>Vice President</td> *@
-                @*                         <td> *@
-                @*                             <select class="form-select" id="vp"> *@
-                @*                                 <option value="">Select Candidate</option> *@
-                @*                                 <option value="Candidate X">Candidate X</option> *@
-                @*                                 <option value="Candidate Y">Candidate Y</option> *@
-                @*                             </select> *@
-                @*                         </td> *@
-                @*                     </tr> *@
-                @*                     <tr> *@
-                @*                         <td>Senators (Choose up to 12)</td> *@
-                @*                         <td> *@
-                @*                             <select class="form-select" id="senators" multiple> *@
-                @*                                 <option value="Senator 1">Senator 1</option> *@
-                @*                                 <option value="Senator 2">Senator 2</option> *@
-                @*                                 <option value="Senator 3">Senator 3</option> *@
-                @*                                 <option value="Senator 4">Senator 4</option> *@
-                @*                                 <option value="Senator 5">Senator 5</option> *@
-                @*                                 <option value="Senator 6">Senator 6</option> *@
-                @*                                 <option value="Senator 7">Senator 7</option> *@
-                @*                                 <option value="Senator 8">Senator 8</option> *@
-                @*                                 <option value="Senator 9">Senator 9</option> *@
-                @*                                 <option value="Senator 10">Senator 10</option> *@
-                @*                                 <option value="Senator 11">Senator 11</option> *@
-                @*                                 <option value="Senator 12">Senator 12</option> *@
-                @*                             </select> *@
-                @*                         </td> *@
-                @*                     </tr> *@
-                @*                     <tr> *@
-                @*                         <td>District Representative</td> *@
-                @*                         <td> *@
-                @*                             <select class="form-select" id="districtRep"> *@
-                @*                                 <option value="">Select Candidate</option> *@
-                @*                                 <option value="Rep 1">Rep 1</option> *@
-                @*                                 <option value="Rep 2">Rep 2</option> *@
-                @*                                 <option value="Rep 3">Rep 3</option> *@
-                @*                             </select> *@
-                @*                         </td> *@
-                @*                     </tr> *@
-                @*                     <tr> *@
-                @*                         <td>Party-List Representative</td> *@
-                @*                         <td> *@
-                @*                             <select class="form-select" id="partyListRep"> *@
-                @*                                 <option value="">Select Party-List</option> *@
-                @*                                 <option value="Party-List A">Party-List A</option> *@
-                @*                                 <option value="Party-List B">Party-List B</option> *@
-                @*                                 <option value="Party-List C">Party-List C</option> *@
-                @*                             </select> *@
-                @*                         </td> *@
-                @*                     </tr> *@
-                @*                 </table> *@
-                @*             </div> *@
-                @*         </div> *@
-                @*     } *@
-                @* } *@
-
+                <form action="/" method="post">
                 @if (string.IsNullOrEmpty(electionType))
                 {
                     <div class="alert alert-danger">No election type selected.</div>
@@ -168,7 +87,7 @@
                 else
                 {
                     <!-- National Positions -->
-                    @if (electionType.Contains("Presidential Elections"))
+                    @if (electionType.Contains("National Elections"))
                     {
                         <div class="card mb-3 election-section" id="nationalSection">
                             <div class="card-header bg-primary text-white">National Positions</div>
@@ -179,61 +98,39 @@
                                     <tr>
                                         <td>President</td>
                                         <td>
-                                            <select class="form-select" id="president">
+                                            <select class="form-select candidate-dropdown" id="president" data-position="President">
                                                 <option value="">Select Candidate</option>
-                                                <option value="Candidate A">Candidate A</option>
-                                                <option value="Candidate B">Candidate B</option>
                                             </select>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Vice President</td>
                                         <td>
-                                            <select class="form-select" id="vp">
+                                            <select class="form-select candidate-dropdown" id="vp" data-position="Vice President">
                                                 <option value="">Select Candidate</option>
-                                                <option value="Candidate X">Candidate X</option>
-                                                <option value="Candidate Y">Candidate Y</option>
                                             </select>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Senators (Choose up to 12)</td>
                                         <td>
-                                            <select class="form-select" id="senators" multiple>
-                                                <option value="Senator 1">Senator 1</option>
-                                                <option value="Senator 2">Senator 2</option>
-                                                <option value="Senator 3">Senator 3</option>
-                                                <option value="Senator 4">Senator 4</option>
-                                                <option value="Senator 5">Senator 5</option>
-                                                <option value="Senator 6">Senator 6</option>
-                                                <option value="Senator 7">Senator 7</option>
-                                                <option value="Senator 8">Senator 8</option>
-                                                <option value="Senator 9">Senator 9</option>
-                                                <option value="Senator 10">Senator 10</option>
-                                                <option value="Senator 11">Senator 11</option>
-                                                <option value="Senator 12">Senator 12</option>
+                                            <select class="form-select candidate-dropdown" id="senators" data-position="Senator" multiple>
                                             </select>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>District Representative</td>
                                         <td>
-                                            <select class="form-select" id="districtRep">
+                                            <select class="form-select candidate-dropdown" id="districtRep" data-position="District Representative">
                                                 <option value="">Select Candidate</option>
-                                                <option value="Rep 1">Rep 1</option>
-                                                <option value="Rep 2">Rep 2</option>
-                                                <option value="Rep 3">Rep 3</option>
                                             </select>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Party-List Representative</td>
                                         <td>
-                                            <select class="form-select" id="partyListRep">
-                                                <option value="">Select Party-List</option>
-                                                <option value="Party-List A">Party-List A</option>
-                                                <option value="Party-List B">Party-List B</option>
-                                                <option value="Party-List C">Party-List C</option>
+                                            <select class="form-select candidate-dropdown" id="partyListRep" data-position="Party-List Representative">
+                                                <option value="">Select Candidate</option>
                                             </select>
                                         </td>
                                     </tr>
@@ -243,184 +140,146 @@
                     }
 
 
-                    @if (electionType.Contains("Midterm Elections"))
-                    {
-                        <!-- Midterm Elections -->
-                        <div class="card mb-3 election-section" id="midtermSection">
-                            <div class="card-header bg-secondary text-white">Midterm Elections</div>
-                            <div class="card-body">
-                                <p><strong>Midterm Elections (Every 3 Years, Between Presidential Elections)</strong></p>
+                        @if (electionType.Contains("Midterm Elections"))
+                        {
+                            <!-- Midterm Elections -->
+                            <div class="card mb-3 election-section" id="midtermSection">
+                                <div class="card-header bg-secondary text-white">Midterm Elections</div>
+                                <div class="card-body">
+                                    <p><strong>Midterm Elections (Every 3 Years, Between Presidential Elections)</strong></p>
 
-                                <table class="table table-sm">
-                                    <!-- Senators (Choose up to 12) -->
-                                    <tr>
-                                        <td>Senators (Choose up to 12)</td>
-                                        <td>
-                                            <select class="form-select" id="midterm_senators" multiple>
-                                                <option value="Senator 1">Senator 1</option>
-                                                <option value="Senator 2">Senator 2</option>
-                                                <option value="Senator 3">Senator 3</option>
-                                                <option value="Senator 4">Senator 4</option>
-                                                <option value="Senator 5">Senator 5</option>
-                                                <option value="Senator 6">Senator 6</option>
-                                                <option value="Senator 7">Senator 7</option>
-                                                <option value="Senator 8">Senator 8</option>
-                                                <option value="Senator 9">Senator 9</option>
-                                                <option value="Senator 10">Senator 10</option>
-                                                <option value="Senator 11">Senator 11</option>
-                                                <option value="Senator 12">Senator 12</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- District Representative -->
-                                    <tr>
-                                        <td>District Representative</td>
-                                        <td>
-                                            <select class="form-select" id="midterm_districtRep">
-                                                <option value="">Select Candidate</option>
-                                                <option value="Rep 1">Rep 1</option>
-                                                <option value="Rep 2">Rep 2</option>
-                                                <option value="Rep 3">Rep 3</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- Party-List Representative -->
-                                    <tr>
-                                        <td>Party-List Representative</td>
-                                        <td>
-                                            <select class="form-select" id="midterm_partyListRep">
-                                                <option value="">Select Party-List</option>
-                                                <option value="Party-List A">Party-List A</option>
-                                                <option value="Party-List B">Party-List B</option>
-                                                <option value="Party-List C">Party-List C</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- Regional Governor -->
-                                    <tr>
-                                        <td>Regional Governor</td>
-                                        <td>
-                                            <select class="form-select" id="regionalGovernor">
-                                                <option value="">Select Candidate</option>
-                                                <option value="Candidate 1">Candidate 1</option>
-                                                <option value="Candidate 2">Candidate 2</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- Regional Vice Governor -->
-                                    <tr>
-                                        <td>Regional Vice Governor</td>
-                                        <td>
-                                            <select class="form-select" id="regionalViceGovernor">
-                                                <option value="">Select Candidate</option>
-                                                <option value="Candidate A">Candidate A</option>
-                                                <option value="Candidate B">Candidate B</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- Regional Assembly Members -->
-                                    <tr>
-                                        <td>Regional Assembly Members</td>
-                                        <td>
-                                            <select class="form-select" id="regionalAssembly" multiple>
-                                                <option value="Member 1">Member 1</option>
-                                                <option value="Member 2">Member 2</option>
-                                                <option value="Member 3">Member 3</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- Provincial Governor -->
-                                    <tr>
-                                        <td>Governor</td>
-                                        <td>
-                                            <select class="form-select" id="provincialGovernor">
-                                                <option value="">Select Candidate</option>
-                                                <option value="Candidate X">Candidate X</option>
-                                                <option value="Candidate Y">Candidate Y</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- Provincial Vice Governor -->
-                                    <tr>
-                                        <td>Vice Governor</td>
-                                        <td>
-                                            <select class="form-select" id="provincialViceGovernor">
-                                                <option value="">Select Candidate</option>
-                                                <option value="Candidate M">Candidate M</option>
-                                                <option value="Candidate N">Candidate N</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- Sangguniang Panlalawigan Members -->
-                                    <tr>
-                                        <td>Sangguniang Panlalawigan Members</td>
-                                        <td>
-                                            <select class="form-select" id="sanggunianPanlalawigan" multiple>
-                                                <option value="Member A">Member A</option>
-                                                <option value="Member B">Member B</option>
-                                                <option value="Member C">Member C</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- City/Municipal Mayor -->
-                                    <tr>
-                                        <td>Mayor</td>
-                                        <td>
-                                            <select class="form-select" id="mayor">
-                                                <option value="">Select Candidate</option>
-                                                <option value="Candidate P">Candidate P</option>
-                                                <option value="Candidate Q">Candidate Q</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- City/Municipal Vice Mayor -->
-                                    <tr>
-                                        <td>Vice Mayor</td>
-                                        <td>
-                                            <select class="form-select" id="viceMayor">
-                                                <option value="">Select Candidate</option>
-                                                <option value="Candidate R">Candidate R</option>
-                                                <option value="Candidate S">Candidate S</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- Sangguniang Panlungsod/Bayan Members -->
-                                    <tr>
-                                        <td>Sangguniang Panlungsod/Bayan Members</td>
-                                        <td>
-                                            <select class="form-select" id="sanggunianBayan" multiple>
-                                                <option value="Member X">Member X</option>
-                                                <option value="Member Y">Member Y</option>
-                                                <option value="Member Z">Member Z</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- Barangay Captain -->
-                                    <tr>
-                                        <td>Barangay Captain</td>
-                                        <td>
-                                            <select class="form-select" id="barangayCaptain">
-                                                <option value="">Select Candidate</option>
-                                                <option value="Candidate U">Candidate U</option>
-                                                <option value="Candidate V">Candidate V</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- Sangguniang Barangay Members -->
-                                    <tr>
-                                        <td>Sangguniang Barangay Members</td>
-                                        <td>
-                                            <select class="form-select" id="sanggunianBarangay" multiple>
-                                                <option value="Member 1">Member 1</option>
-                                                <option value="Member 2">Member 2</option>
-                                                <option value="Member 3">Member 3</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                </table>
+                                    <table class="table table-sm">
+                                        <!-- Senators (Choose up to 12) -->
+                                        <tr>
+                                            <td>Senators (Choose up to 12)</td>
+                                            <td>
+                                                <select class="form-select" id="midterm_senators" multiple>
+                                                    <option value="">Select 12 senators</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- District Representative -->
+                                        <tr>
+                                            <td>District Representative</td>
+                                            <td>
+                                                <select class="form-select" id="midterm_districtRep">
+                                                    <option value="">Select District Representative</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Party-List Representative -->
+                                        <tr>
+                                            <td>Party-List Representative</td>
+                                            <td>
+                                                <select class="form-select" id="midterm_partyListRep">
+                                                    <option value="">Select Party-List</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Regional Governor -->
+                                        <tr>
+                                            <td>Regional Governor</td>
+                                            <td>
+                                                <select class="form-select" id="regionalGovernor">
+                                                    <option value="">Select Governor</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Regional Vice Governor -->
+                                        <tr>
+                                            <td>Regional Vice Governor</td>
+                                            <td>
+                                                <select class="form-select" id="regionalViceGovernor">
+                                                    <option value="">Select Vice Governor</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Regional Assembly Members -->
+                                        <tr>
+                                            <td>Regional Assembly Members</td>
+                                            <td>
+                                                <select class="form-select" id="regionalAssembly" multiple>
+                                                    <option value="">Regional Assembly</option>
+
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Provincial Governor -->
+                                        <tr>
+                                            <td>Governor</td>
+                                            <td>
+                                                <select class="form-select" id="provincialGovernor">
+                                                    <option value="">Select Governor</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Provincial Vice Governor -->
+                                        <tr>
+                                            <td>Vice Governor</td>
+                                            <td>
+                                                <select class="form-select" id="provincialViceGovernor">
+                                                    <option value="">Select Vice Governor</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Sangguniang Panlalawigan Members -->
+                                        <tr>
+                                            <td>Sangguniang Panlalawigan Members</td>
+                                            <td>
+                                                <select class="form-select" id="sanggunianPanlalawigan" multiple>
+                                                    <option value="">Select Sanggunian Panlalawigan</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- City/Municipal Mayor -->
+                                        <tr>
+                                            <td>Mayor</td>
+                                            <td>
+                                                <select class="form-select" id="mayor">
+                                                    <option value="">Select Mayor</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- City/Municipal Vice Mayor -->
+                                        <tr>
+                                            <td>Vice Mayor</td>
+                                            <td>
+                                                <select class="form-select" id="viceMayor">
+                                                    <option value="">Select Vice Mayor</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Sangguniang Panlungsod/Bayan Members -->
+                                        <tr>
+                                            <td>Sangguniang Panlungsod/Bayan Members</td>
+                                            <td>
+                                                <select class="form-select" id="sanggunianBayan" multiple>
+                                                    <option value="">Select Sangunian Bayan</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Barangay Captain -->
+                                        <tr>
+                                            <td>Barangay Captain</td>
+                                            <td>
+                                                <select class="form-select" id="barangayCaptain">
+                                                    <option value="">Select Barangay Captain</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Sangguniang Barangay Members -->
+                                        <tr>
+                                            <td>Sangguniang Barangay Members</td>
+                                            <td>
+                                                <select class="form-select" id="sanggunianBarangay" multiple>
+                                                    <option value="">Select Sanggunian Barangay</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
-                    }
+                        }
 
                     @if (electionType.Contains("Regional Elections"))
                     {
@@ -520,7 +379,7 @@
                             </div>
                         </div>
                     }
-                    @if (electionType.Contains("City / Municipal Elections"))
+                    @if (electionType.Contains("City/Municipality Elections"))
                     {
                         <!-- City/Municipal Elections -->
                         <div class="card mb-3 election-section" id="cityMunicipalSection">
@@ -569,7 +428,7 @@
                             </div>
                         </div>
                     }
-                    @if (electionType.Contains("Barangay Elections"))
+                    @if (electionType.Contains("Barangay and SK Elections"))
                     {
                         <!-- Barangay Elections -->
                         <div class="card mb-3 election-section" id="barangaySection">
@@ -605,53 +464,41 @@
                                             </select>
                                         </td>
                                     </tr>
+
+                                        <tr>
+                                            <td>SK Chairman (Youth Leader of the Barangay)</td>
+                                            <td>
+                                                <select class="form-select" id="skChairman">
+                                                    <option value="">Select Candidate</option>
+                                                    <option value="Candidate A">Candidate A</option>
+                                                    <option value="Candidate B">Candidate B</option>
+                                                    <option value="Candidate C">Candidate C</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- SK Members -->
+                                        <tr>
+                                            <td>SK Members (Youth Legislative Body)</td>
+                                            <td>
+                                                <select class="form-select" id="skMembers" multiple>
+                                                    <option value="Member 1">Member 1</option>
+                                                    <option value="Member 2">Member 2</option>
+                                                    <option value="Member 3">Member 3</option>
+                                                    <option value="Member 4">Member 4</option>
+                                                    <option value="Member 5">Member 5</option>
+                                                    <option value="Member 6">Member 6</option>
+                                                    <option value="Member 7">Member 7</option>
+                                                </select>
+                                            </td>
+                                        </tr>
                                 </table>
                             </div>
                         </div>
-                    }
-                    @if (electionType.Contains("Sangguniang Kabataan (SK) Elections"))
-                    {
-                        <!-- SK Elections -->
-                        <div class="card mb-3 election-section" id="skSection">
-                            <div class="card-header bg-primary text-white">Sangguniang Kabataan (SK) Elections</div>
-                            <div class="card-body">
-                                <p><strong>Sangguniang Kabataan (SK) Elections (Every 3 Years, Alongside Barangay Elections)</strong></p>
-
-                                <table class="table table-sm">
-                                    <!-- SK Chairman -->
-                                    <tr>
-                                        <td>SK Chairman (Youth Leader of the Barangay)</td>
-                                        <td>
-                                            <select class="form-select" id="skChairman">
-                                                <option value="">Select Candidate</option>
-                                                <option value="Candidate A">Candidate A</option>
-                                                <option value="Candidate B">Candidate B</option>
-                                                <option value="Candidate C">Candidate C</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- SK Members -->
-                                    <tr>
-                                        <td>SK Members (Youth Legislative Body)</td>
-                                        <td>
-                                            <select class="form-select" id="skMembers" multiple>
-                                                <option value="Member 1">Member 1</option>
-                                                <option value="Member 2">Member 2</option>
-                                                <option value="Member 3">Member 3</option>
-                                                <option value="Member 4">Member 4</option>
-                                                <option value="Member 5">Member 5</option>
-                                                <option value="Member 6">Member 6</option>
-                                                <option value="Member 7">Member 7</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-
                     }
                 }
+                    <button id="submitVote" class="btn btn-success mt-3">Submit Vote</button>
 
+                </form>
             </div>
         </div>
     </main>
@@ -680,6 +527,76 @@
     <script>
         var electionType = "@ViewBag.ElectionType";
         console.log("Election Type received:", electionType);
+    </script>
+    <script>
+        $(document).ready(function () {
+            function loadCandidates(position, dropdownId) {
+                $.ajax({
+                    url: '/User/GetCandidatesByPosition',
+                    type: 'GET',
+                    data: { positionName: position },
+                    success: function (response) {
+                        var dropdown = $('#' + dropdownId);
+                        dropdown.empty();
+                        dropdown.append('<option value="">Select Candidate</option>');
+
+                        if (response.success && response.data.length > 0) {
+                            $.each(response.data, function (index, candidate) {
+                                dropdown.append('<option value="' + candidate.candidateId + '">' + candidate.fullName + '</option>');
+                            });
+                        } else {
+                            dropdown.append('<option value="">No candidates found</option>');
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error("Error retrieving candidates:", xhr.responseText);
+                    }
+                });
+            }
+
+            // Load candidates for each position
+            loadCandidates("President", "president");
+            loadCandidates("Vice President", "vp");
+            loadCandidates("Senators", "senators");
+            loadCandidates("District Representatives", "districtRep");
+            loadCandidates("Party-List Representatives", "partyListRep");
+
+            loadCandidates("Senators", "midterm_senators");
+            loadCandidates("District Representatives", "midterm_districtRep");
+            loadCandidates("Party-List Representatives", "midterm_partyListRep");
+            loadCandidates("Regional Governor", "regionalGovernor");
+            loadCandidates("Regional Vice Governor", "regionalViceGovernor");
+            loadCandidates("Regional Assembly Members", "regionalAssembly");
+            loadCandidates("Governor", "provincialGovernor");
+            loadCandidates("Vice Governor", "provincialViceGovernor");
+            loadCandidates("Sangguniang Panlalawigan Members", "sanggunianPanlalawigan");
+            loadCandidates("City/Municipal Mayor", "mayor");
+            loadCandidates("City/Municipal Vice Mayor", "viceMayor");
+            loadCandidates("Sangguniang Panlungsod/Bayan Members", "sanggunianBayan");
+            loadCandidates("Barangay Captain (Punong Barangay)", "barangayCaptain");
+            loadCandidates("Sangguniang Barangay Members", "sanggunianBarangay");
+
+
+            // loadCandidates("11", "11");
+            // loadCandidates("11", "11");
+            // loadCandidates("11", "11");
+            // loadCandidates("11", "11");
+            // loadCandidates("11", "11");
+            // loadCandidates("11", "11");
+            // loadCandidates("11", "11");
+            // loadCandidates("11", "11");
+            // loadCandidates("11", "11");
+            // loadCandidates("11", "11");
+            // loadCandidates("11", "11");
+            // loadCandidates("11", "11");
+            // loadCandidates("11", "11");
+            // loadCandidates("11", "11");
+            // loadCandidates("11", "11");
+            // loadCandidates("11", "11");
+            // loadCandidates("11", "11");
+            // loadCandidates("11", "11");
+            // loadCandidates("11", "11");
+        });
     </script>
 
 </body>
