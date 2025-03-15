@@ -40,21 +40,6 @@ namespace eElection.Controllers
             return View();
         }
 
-        //[HttpGet]
-        //public IActionResult GetCandidates(string position)
-        //{
-        //    var candidates = _context.Candidates
-        //        .Where(c => c.Position.PositionName == position)
-        //        .Select(c => new
-        //        {
-        //            c.CandidateId,
-        //            c.Voter.FirstName // Assuming Candidate table has a Voter reference
-        //        })
-        //        .ToList();
-
-        //    return Json(candidates);
-        //}
-
         [HttpGet]
         public IActionResult GetCandidatesByPosition(string positionName)
         {
@@ -92,75 +77,43 @@ namespace eElection.Controllers
             }
         }
 
-        //[HttpPost]
-        //public IActionResult SubmitVote([FromBody] VoteRequest voteRequest)
-        //{
-        //    try
-        //    {
-        //        if (voteRequest == null)
-        //        {
-        //            return Json(new { success = false, message = "Invalid vote data." });
-        //        }
-
-        //        // Insert vote into database
-        //        var vote = new Vote
-        //        {
-        //            VoterId = 1, // Replace this with the logged-in user's ID
-        //            PresidentId = voteRequest.President,
-        //            VicePresidentId = voteRequest.VicePresident,
-        //            DistrictRepId = voteRequest.DistrictRep,
-        //            PartyListRepId = voteRequest.PartyListRep
-        //        };
-
-        //        _context.Votes.Add(vote);
-        //        _context.SaveChanges();
-
-        //        // Insert multiple senators (since multiple selection is allowed)
-        //        if (voteRequest.Senators != null)
-        //        {
-        //            foreach (var senatorId in voteRequest.Senators)
-        //            {
-        //                _context.VoteDetails.Add(new VoteDetail
-        //                {
-        //                    VoteId = vote.VoteId,
-        //                    CandidateId = senatorId
-        //                });
-        //            }
-        //            _context.SaveChanges();
-        //        }
-
-        //        return Json(new { success = true, message = "Vote submitted successfully." });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Error submitting vote: {ex.Message}");
-        //        return Json(new { success = false, message = "An error occurred while submitting the vote." });
-        //    }
-        //}
-
-
-
-
-        [Authorize(Roles = "Voter")]
-        public IActionResult Ballota(string electionType)
+        [HttpPost]
+        public IActionResult SubmitVote([FromBody] VoteRequest voteRequest)
         {
-            if (string.IsNullOrEmpty(electionType))
+            try
             {
-                return NotFound("Election type not found.");
-            }
+                if (voteRequest == null || voteRequest.VoterId == 0)
+                {
+                    return Json(new { success = false, message = "Invalid vote data." });
+                }
 
-            Console.WriteLine($"Election Type Received: {electionType}"); // Debugging log
-            ViewBag.ElectionType = electionType;
-            return View();
+                // Convert the list of senators to a comma-separated string
+                string senatorsCsv = voteRequest.Senators != null ? string.Join(",", voteRequest.Senators) : null;
+
+                // Insert vote into the Vote table
+                var newVote = new Vote
+                {
+                    VoterId = voteRequest.VoterId,
+                    PresidentId = voteRequest.PresidentId,
+                    VicePresidentId = voteRequest.VicePresidentId,
+                    DistrictRepId = voteRequest.DistrictRepId,
+                    PartyListRepId = voteRequest.PartyListRepId,
+                    Senators = senatorsCsv
+                };
+
+                _context.Votes.Add(newVote);
+                _context.SaveChanges();
+
+                return Json(new { success = true, message = "Vote submitted successfully!" });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error submitting vote: {ex.Message}");
+                return Json(new { success = false, message = "An error occurred while submitting the vote." });
+            }
         }
 
 
-
-        //[Authorize(Roles = "Voter")]
-        //public IActionResult Elections()
-        //{
-        //    return View();
-        //}
         [Authorize(Roles = "Voter")]
         public IActionResult Elections()
         {

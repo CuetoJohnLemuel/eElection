@@ -114,8 +114,10 @@
                                     <tr>
                                         <td>Senators (Choose up to 12)</td>
                                         <td>
-                                            <select class="form-select candidate-dropdown" id="senators" data-position="Senator" multiple>
-                                            </select>
+                                            @* <select class="form-select candidate-dropdown" id="senators" data-position="Senator" multiple> *@
+                                            @* </select> *@
+                                                <div id="senators-container"></div>
+                                                <p><small>Selected: <span id="senators-count">0</span>/12</small></p>
                                         </td>
                                     </tr>
                                     <tr>
@@ -554,16 +556,43 @@
                 });
             }
 
-            // Load candidates for each position
+            // Function to load senators with checkboxes
+            function loadSenators() {
+                $.ajax({
+                    url: '/User/GetCandidatesByPosition',
+                    type: 'GET',
+                    data: { positionName: "Senators" },
+                    success: function (response) {
+                        var container = $('#senators-container');
+                        container.empty(); // Clear previous content
+
+                        if (response.success && response.data.length > 0) {
+                            $.each(response.data, function (index, candidate) {
+                                container.append(
+                                    '<div>' +
+                                    '<input type="checkbox" class="senator-checkbox" id="senator-' + candidate.candidateId + '" value="' + candidate.candidateId + '">' +
+                                    '<label for="senator-' + candidate.candidateId + '"> ' + candidate.fullName + '</label>' +
+                                    '</div>'
+                                );
+                            });
+                        } else {
+                            container.append('<p>No candidates found</p>');
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error("Error retrieving senators:", xhr.responseText);
+                    }
+                });
+            }
+
+            // Load candidates for all positions
             loadCandidates("President", "president");
             loadCandidates("Vice President", "vp");
-            loadCandidates("Senators", "senators");
             loadCandidates("District Representatives", "districtRep");
             loadCandidates("Party-List Representatives", "partyListRep");
-
-            loadCandidates("Senators", "midterm_senators");
-            loadCandidates("District Representatives", "midterm_districtRep");
-            loadCandidates("Party-List Representatives", "midterm_partyListRep");
+            loadCandidates("Midterm Senators", "midterm_senators");
+            loadCandidates("Midterm District Representatives", "midterm_districtRep");
+            loadCandidates("Midterm Party-List Representatives", "midterm_partyListRep");
             loadCandidates("Regional Governor", "regionalGovernor");
             loadCandidates("Regional Vice Governor", "regionalViceGovernor");
             loadCandidates("Regional Assembly Members", "regionalAssembly");
@@ -576,29 +605,67 @@
             loadCandidates("Barangay Captain (Punong Barangay)", "barangayCaptain");
             loadCandidates("Sangguniang Barangay Members", "sanggunianBarangay");
 
+            // Load senators dynamically
+            loadSenators();
 
-            // loadCandidates("11", "11");
-            // loadCandidates("11", "11");
-            // loadCandidates("11", "11");
-            // loadCandidates("11", "11");
-            // loadCandidates("11", "11");
-            // loadCandidates("11", "11");
-            // loadCandidates("11", "11");
-            // loadCandidates("11", "11");
-            // loadCandidates("11", "11");
-            // loadCandidates("11", "11");
-            // loadCandidates("11", "11");
-            // loadCandidates("11", "11");
-            // loadCandidates("11", "11");
-            // loadCandidates("11", "11");
-            // loadCandidates("11", "11");
-            // loadCandidates("11", "11");
-            // loadCandidates("11", "11");
-            // loadCandidates("11", "11");
-            // loadCandidates("11", "11");
+            // Limit selection to 12 senators
+            $(document).on("change", ".senator-checkbox", function () {
+                let checkedCount = $(".senator-checkbox:checked").length;
+                $("#senators-count").text(checkedCount);
+
+                if (checkedCount > 12) {
+                    $(this).prop("checked", false);
+                    alert("You can only select up to 12 senators.");
+                }
+            });
         });
     </script>
 
+    <script>
+        $(document).ready(function () {
+            $("#submitVote").click(function (e) {
+                e.preventDefault();
+
+                let voterId = 22; // Replace with dynamic voter ID from session or authentication
+                 let selectedSenators = $(".senator-checkbox:checked").map(function () {
+            return this.value;
+        }).get();
+
+                let voteData = {
+                    VoterId: voterId,
+                    PresidentId: $("#president").val(),
+                    VicePresidentId: $("#vp").val(),
+                    DistrictRepId: $("#districtRep").val(),
+                    PartyListRepId: $("#partyListRep").val(),
+                    Senators: selectedSenators
+                };
+
+                $.ajax({
+                    url: "/User/SubmitVote",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(voteData),
+                    success: function (response) {
+                        if (response.success) {
+                            alert("Vote submitted successfully!");
+                            location.reload();
+                        } else {
+                            alert("Error: " + response.message);
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error("Vote submission error:", xhr.responseText);
+                        alert("An error occurred while submitting your vote.");
+                    }
+                });
+            });
+        });
+
+    </script>
+
+
+
+   
 </body>
 
 </html>

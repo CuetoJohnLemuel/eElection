@@ -2,10 +2,11 @@
 {
     public class VoteRequest
     {
-        public int? President { get; set; }
-        public int? VicePresident { get; set; }
-        public List<int>? Senators { get; set; }
-        public int? DistrictRep { get; set; }
-        public int? PartyListRep { get; set; }
+        public int VoterId { get; set; }
+        public int? PresidentId { get; set; }
+        public int? VicePresidentId { get; set; }
+        public int? DistrictRepId { get; set; }
+        public int? PartyListRepId { get; set; }
+        public List<int> Senators { get; set; }
     }
 }

@@ -11,5 +11,6 @@ namespace eElection.Models
         public int? VicePresidentId { get; set; }
         public int? DistrictRepId { get; set; }
         public int? PartyListRepId { get; set; }
+        public string? Senators { get; set; }
     }
 }
