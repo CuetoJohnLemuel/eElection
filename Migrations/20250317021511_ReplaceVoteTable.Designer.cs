@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eElection.Data;
 
@@ -11,9 +12,11 @@ using eElection.Data;
 namespace eElection.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250317021511_ReplaceVoteTable")]
+    partial class ReplaceVoteTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -645,9 +648,6 @@ namespace eElection.Migrations
                     b.Property<int?>("DistrictRepId")
                         .HasColumnType("int");
 
-                    b.Property<string>("MidSenators")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("PartyListRepId")
                         .HasColumnType("int");
 
@@ -655,6 +655,7 @@ namespace eElection.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Senators")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("VicePresidentId")

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eElection.Data;
 
@@ -11,9 +12,11 @@ using eElection.Data;
 namespace eElection.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250317014828_UpdateVoteTable")]
+    partial class UpdateVoteTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -642,11 +645,17 @@ namespace eElection.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VoteId"));
 
+                    b.Property<int?>("BarangayCaptainId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int?>("DistrictRepId")
                         .HasColumnType("int");
 
-                    b.Property<string>("MidSenators")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("MayorId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("PartyListRepId")
                         .HasColumnType("int");
@@ -654,8 +663,47 @@ namespace eElection.Migrations
                     b.Property<int?>("PresidentId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Senators")
+                    b.Property<int?>("ProvincialGovernorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProvincialViceGovernorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RegionalAssemblyMembers")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("RegionalGovernorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RegionalViceGovernorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SKChairmanId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SKMembers")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SangguniangBarangayMembers")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SangguniangPanlalawiganMembers")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SangguniangPanlungsodBayanMembers")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Senators")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ViceMayorId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("VicePresidentId")
                         .HasColumnType("int");

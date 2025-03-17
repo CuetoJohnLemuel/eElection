@@ -703,3 +703,4 @@ D:\LEMUEL\C#Project\gitEElection\eElection\bin\Debug\net9.0\Microsoft.Extensions
 D:\LEMUEL\C#Project\gitEElection\eElection\bin\Debug\net9.0\Microsoft.Extensions.Logging.Abstractions.dll
 D:\LEMUEL\C#Project\gitEElection\eElection\bin\Debug\net9.0\Microsoft.Extensions.Options.dll
 D:\LEMUEL\C#Project\gitEElection\eElection\bin\Debug\net9.0\Microsoft.Extensions.Primitives.dll
+D:\LEMUEL\C#Project\gitEElection\eElection\bin\Debug\net9.0\Newtonsoft.Json.dll

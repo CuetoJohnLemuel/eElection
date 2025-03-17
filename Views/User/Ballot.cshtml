@@ -56,6 +56,7 @@
                 <ul>
                     <li><a asp-controller="User" asp-action="Homes">Home</a></li>
                     <li><a asp-controller="User" asp-action="Candidate">Candidate</a></li>
+                    <li><a asp-controller="User" asp-action="Elections">Election</a></li>
                     <li><a asp-controller="User" asp-action="Profile">Profile</a></li>
                     @* <li><a asp-controller="User" asp-action="Logout">Logout</a></li> *@
                     <li class="nav-item dropdown">
@@ -155,9 +156,8 @@
                                         <tr>
                                             <td>Senators (Choose up to 12)</td>
                                             <td>
-                                                <select class="form-select" id="midterm_senators" multiple>
-                                                    <option value="">Select 12 senators</option>
-                                                </select>
+                                                <div id="mid-senators-container"></div>
+                                                <p><small>Selected: <span id="mid-senators-count">0</span>/12</small></p>
                                             </td>
                                         </tr>
                                         <!-- District Representative -->
@@ -196,16 +196,6 @@
                                                 </select>
                                             </td>
                                         </tr>
-                                        <!-- Regional Assembly Members -->
-                                        <tr>
-                                            <td>Regional Assembly Members</td>
-                                            <td>
-                                                <select class="form-select" id="regionalAssembly" multiple>
-                                                    <option value="">Regional Assembly</option>
-
-                                                </select>
-                                            </td>
-                                        </tr>
                                         <!-- Provincial Governor -->
                                         <tr>
                                             <td>Governor</td>
@@ -228,9 +218,8 @@
                                         <tr>
                                             <td>Sangguniang Panlalawigan Members</td>
                                             <td>
-                                                <select class="form-select" id="sanggunianPanlalawigan" multiple>
-                                                    <option value="">Select Sanggunian Panlalawigan</option>
-                                                </select>
+                                                <div id="mid-sanggunianPanlalawigan-container"></div>
+                                                <p><small>Selected: <span id="sanggunianPanlalawigan-count">0</span>/5</small></p>
                                             </td>
                                         </tr>
                                         <!-- City/Municipal Mayor -->
@@ -255,9 +244,8 @@
                                         <tr>
                                             <td>Sangguniang Panlungsod/Bayan Members</td>
                                             <td>
-                                                <select class="form-select" id="sanggunianBayan" multiple>
-                                                    <option value="">Select Sangunian Bayan</option>
-                                                </select>
+                                                <div id="mid-sanggunianBayan-container"></div>
+                                                <p><small>Selected: <span id="sanggunianBayan-count">0</span>/10</small></p>
                                             </td>
                                         </tr>
                                         <!-- Barangay Captain -->
@@ -273,9 +261,8 @@
                                         <tr>
                                             <td>Sangguniang Barangay Members</td>
                                             <td>
-                                                <select class="form-select" id="sanggunianBarangay" multiple>
-                                                    <option value="">Select Sanggunian Barangay</option>
-                                                </select>
+                                                <div id="mid-sanggunianBarangay-container"></div>
+                                                <p><small>Selected: <span id="sanggunianBarangay-count">0</span>/7</small></p>
                                             </td>
                                         </tr>
                                     </table>
@@ -584,6 +571,34 @@
                     }
                 });
             }
+             // Function to load mid senators with checkboxes
+            function loadMidSenators() {
+                $.ajax({
+                    url: '/User/GetCandidatesByPosition',
+                    type: 'GET',
+                    data: { positionName: "Senators" },
+                    success: function (response) {
+                        var container = $('#mid-senators-container');
+                        container.empty(); // Clear previous content
+
+                        if (response.success && response.data.length > 0) {
+                            $.each(response.data, function (index, candidate) {
+                                container.append(
+                                    '<div>' +
+                                    '<input type="checkbox" class="mid-senator-checkbox" id="senator-' + candidate.candidateId + '" value="' + candidate.candidateId + '">' +
+                                    '<label for="senator-' + candidate.candidateId + '"> ' + candidate.fullName + '</label>' +
+                                    '</div>'
+                                );
+                            });
+                        } else {
+                            container.append('<p>No candidates found</p>');
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error("Error retrieving senators:", xhr.responseText);
+                    }
+                });
+            }
 
             // Load candidates for all positions
             loadCandidates("President", "president");
@@ -605,8 +620,13 @@
             loadCandidates("Barangay Captain (Punong Barangay)", "barangayCaptain");
             loadCandidates("Sangguniang Barangay Members", "sanggunianBarangay");
 
+            // Midterm Election
+            loadMidSenators();
+            // loadCandidates("District Representatives", "districtRep");
+
             // Load senators dynamically
             loadSenators();
+
 
             // Limit selection to 12 senators
             $(document).on("change", ".senator-checkbox", function () {
@@ -618,27 +638,49 @@
                     alert("You can only select up to 12 senators.");
                 }
             });
+
+                        // Limit selection to 12 mid senators
+            $(document).on("change", ".mid-senator-checkbox", function () {
+                let checkedCount = $(".mid-senator-checkbox:checked").length;
+                $("#mid-senators-count").text(checkedCount);
+
+                if (checkedCount > 12) {
+                    $(this).prop("checked", false);
+                    alert("You can only select up to 12 senators.");
+                }
+            });
         });
     </script>
 
     <script>
-        $(document).ready(function () {
+               $(document).ready(function () {
             $("#submitVote").click(function (e) {
                 e.preventDefault();
 
                 let voterId = 22; // Replace with dynamic voter ID from session or authentication
-                 let selectedSenators = $(".senator-checkbox:checked").map(function () {
-            return this.value;
-        }).get();
 
+                // Collect selected candidates
+                let selectedSenators = $(".senator-checkbox:checked").map(function () {
+                    return parseInt(this.value); // Convert to integer
+                }).get();
+
+                let selectedMidSenators = $(".mid-senator-checkbox:checked").map(function () {
+                    return parseInt(this.value); // Convert to integer
+                }).get();
+
+                // Create vote data object
                 let voteData = {
                     VoterId: voterId,
-                    PresidentId: $("#president").val(),
-                    VicePresidentId: $("#vp").val(),
-                    DistrictRepId: $("#districtRep").val(),
-                    PartyListRepId: $("#partyListRep").val(),
-                    Senators: selectedSenators
+                    PresidentId: $("#president").val() ? parseInt($("#president").val()) : 0,
+                    VicePresidentId: $("#vp").val() ? parseInt($("#vp").val()) : 0,
+                    DistrictRepId: $("#districtRep").val() ? parseInt($("#districtRep").val()) : 0,
+                    PartyListRepId: $("#partyListRep").val() ? parseInt($("#partyListRep").val()) : 0,
+                    Senators: selectedSenators,
+                    MidSenators: selectedMidSenators
                 };
+
+                // Add detailed console logging for debugging
+                console.log("Vote Data being sent:", JSON.stringify(voteData, null, 2));
 
                 $.ajax({
                     url: "/User/SubmitVote",
@@ -646,16 +688,27 @@
                     contentType: "application/json",
                     data: JSON.stringify(voteData),
                     success: function (response) {
+                        console.log("Server response:", response);
                         if (response.success) {
                             alert("Vote submitted successfully!");
                             location.reload();
                         } else {
-                            alert("Error: " + response.message);
+                            alert("Server error: " + response.message);
                         }
                     },
-                    error: function (xhr) {
-                        console.error("Vote submission error:", xhr.responseText);
-                        alert("An error occurred while submitting your vote.");
+                    error: function (xhr, status, error) {
+                        console.error("Vote submission error status:", status);
+                        console.error("Error details:", error);
+                        console.error("Response text:", xhr.responseText);
+                        console.error("Status code:", xhr.status);
+
+                        // Try to parse the error response if possible
+                        try {
+                            const errorResponse = JSON.parse(xhr.responseText);
+                            alert("Server error: " + (errorResponse.message || "Unknown error occurred"));
+                        } catch (e) {
+                            alert("An error occurred while submitting your vote. Please check the console for details.");
+                        }
                     }
                 });
             });

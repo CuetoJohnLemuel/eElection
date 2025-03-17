@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using eElection.Data;
 using eElection.Services;
 using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json;  // Add this namespace
 
 namespace eElection.Controllers
 {
@@ -76,40 +77,67 @@ namespace eElection.Controllers
                 return Json(new { success = false, message = "An error occurred while fetching candidates." });
             }
         }
-
         [HttpPost]
         public IActionResult SubmitVote([FromBody] VoteRequest voteRequest)
         {
             try
             {
-                if (voteRequest == null || voteRequest.VoterId == 0)
+                // Log the incoming request for debugging
+                Console.WriteLine($"Received vote request: {JsonConvert.SerializeObject(voteRequest)}");
+
+                if (voteRequest == null)
                 {
-                    return Json(new { success = false, message = "Invalid vote data." });
+                    Console.WriteLine("Vote request is null");
+                    return Json(new { success = false, message = "Vote request is null" });
                 }
 
-                // Convert the list of senators to a comma-separated string
-                string senatorsCsv = voteRequest.Senators != null ? string.Join(",", voteRequest.Senators) : null;
+                if (voteRequest.VoterId == 0)
+                {
+                    Console.WriteLine("Invalid voter ID");
+                    return Json(new { success = false, message = "Invalid voter ID" });
+                }
 
-                // Insert vote into the Vote table
+                // Start building the vote object
                 var newVote = new Vote
                 {
                     VoterId = voteRequest.VoterId,
-                    PresidentId = voteRequest.PresidentId,
-                    VicePresidentId = voteRequest.VicePresidentId,
-                    DistrictRepId = voteRequest.DistrictRepId,
-                    PartyListRepId = voteRequest.PartyListRepId,
-                    Senators = senatorsCsv
+                    // National election fields
+                    PresidentId = voteRequest.PresidentId > 0 ? voteRequest.PresidentId : null,
+                    VicePresidentId = voteRequest.VicePresidentId > 0 ? voteRequest.VicePresidentId : null,
+                    DistrictRepId = voteRequest.DistrictRepId > 0 ? voteRequest.DistrictRepId : null,
+                    PartyListRepId = voteRequest.PartyListRepId > 0 ? voteRequest.PartyListRepId : null,
+                    // Handle senator lists
+                    Senators = voteRequest.Senators != null && voteRequest.Senators.Any()
+                        ? string.Join(",", voteRequest.Senators)
+                        : null,
+                    MidSenators = voteRequest.MidSenators != null && voteRequest.MidSenators.Any()
+                        ? string.Join(",", voteRequest.MidSenators)
+                        : null
                 };
 
+                // Add to database
+                Console.WriteLine("Adding vote to database");
                 _context.Votes.Add(newVote);
-                _context.SaveChanges();
+
+                // Save changes and capture the number of affected rows
+                int rowsAffected = _context.SaveChanges();
+                Console.WriteLine($"SaveChanges completed. Rows affected: {rowsAffected}");
 
                 return Json(new { success = true, message = "Vote submitted successfully!" });
             }
+            catch (DbUpdateException dbEx)
+            {
+                // Handle database-specific exceptions
+                Console.WriteLine($"Database error while submitting vote: {dbEx.Message}");
+                Console.WriteLine($"Inner exception: {dbEx.InnerException?.Message}");
+                return Json(new { success = false, message = $"Database error: {dbEx.InnerException?.Message ?? dbEx.Message}" });
+            }
             catch (Exception ex)
             {
+                // Handle general exceptions
                 Console.WriteLine($"Error submitting vote: {ex.Message}");
-                return Json(new { success = false, message = "An error occurred while submitting the vote." });
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                return Json(new { success = false, message = $"Error: {ex.Message}" });
             }
         }
 
