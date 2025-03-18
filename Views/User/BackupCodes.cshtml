@@ -1,0 +1,426 @@
+﻿Submit Vote
+ [HttpPost]
+        public IActionResult SubmitVote([FromBody] VoteRequest voteRequest)
+        {
+            try
+            {
+                // Log the incoming request for debugging
+                Console.WriteLine($"Received vote request: {JsonConvert.SerializeObject(voteRequest)}");
+
+                if (voteRequest == null)
+                {
+                    Console.WriteLine("Vote request is null");
+                    return Json(new { success = false, message = "Vote request is null" });
+                }
+
+                if (voteRequest.VoterId == 0)
+                {
+                    Console.WriteLine("Invalid voter ID");
+                    return Json(new { success = false, message = "Invalid voter ID" });
+                }
+
+                // Start building the vote object
+                var newVote = new Vote
+                {
+                    VoterId = voteRequest.VoterId,
+                    ElectionId = voteRequest.ElectionId,
+
+                    // National election fields
+                    PresidentId = voteRequest.PresidentId > 0 ? voteRequest.PresidentId : null,
+                    VicePresidentId = voteRequest.VicePresidentId > 0 ? voteRequest.VicePresidentId : null,
+                    DistrictRepId = voteRequest.DistrictRepId > 0 ? voteRequest.DistrictRepId : null,
+                    PartyListRepId = voteRequest.PartyListRepId > 0 ? voteRequest.PartyListRepId : null,
+                    // Handle senator lists
+                    Senators = voteRequest.Senators != null && voteRequest.Senators.Any()
+                        ? string.Join(",", voteRequest.Senators)
+                        : null,
+                    MidSenators = voteRequest.MidSenators != null && voteRequest.MidSenators.Any()
+                        ? string.Join(",", voteRequest.MidSenators)
+                        : null,
+                    MidSanggunianPanlalawigan = voteRequest.MidSanggunianPanlalawigan != null && voteRequest.MidSanggunianPanlalawigan.Any()
+                        ? string.Join(",", voteRequest.MidSanggunianPanlalawigan)
+                        : null,
+                    MidSanggunianBayan = voteRequest.MidSanggunianBayan != null && voteRequest.MidSanggunianBayan.Any()
+                        ? string.Join(",", voteRequest.MidSanggunianBayan)
+                        : null,
+                    MidSanggunianBarangay = voteRequest.MidSanggunianBarangay != null && voteRequest.MidSanggunianBarangay.Any()
+                        ? string.Join(",", voteRequest.MidSanggunianBarangay)
+                        : null
+                };
+
+                // Add to database
+                Console.WriteLine("Adding vote to database");
+                _context.Votes.Add(newVote);
+
+                // Save changes and capture the number of affected rows
+                int rowsAffected = _context.SaveChanges();
+                Console.WriteLine($"SaveChanges completed. Rows affected: {rowsAffected}");
+
+                return Json(new { success = true, message = "Vote submitted successfully!" });
+            }
+            catch (DbUpdateException dbEx)
+            {
+                // Handle database-specific exceptions
+                Console.WriteLine($"Database error while submitting vote: {dbEx.Message}");
+                Console.WriteLine($"Inner exception: {dbEx.InnerException?.Message}");
+                return Json(new { success = false, message = $"Database error: {dbEx.InnerException?.Message ?? dbEx.Message}" });
+            }
+            catch (Exception ex)
+            {
+                // Handle general exceptions
+                Console.WriteLine($"Error submitting vote: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                return Json(new { success = false, message = $"Error: {ex.Message}" });
+            }
+        }
+
+
+
+User Ballot <script></script>
+<script>
+    $(document).ready(function () {
+        function loadCandidates(position, dropdownId) {
+            $.ajax({
+                url: '/User/GetCandidatesByPosition',
+                type: 'GET',
+                data: { positionName: position },
+                success: function (response) {
+                    var dropdown = $('#' + dropdownId);
+                    dropdown.empty();
+                    dropdown.append('<option value="">Select Candidate</option>');
+
+                    if (response.success && response.data.length > 0) {
+                        $.each(response.data, function (index, candidate) {
+                            dropdown.append('<option value="' + candidate.candidateId + '">' + candidate.fullName + '</option>');
+                        });
+                    } else {
+                        dropdown.append('<option value="">No candidates found</option>');
+                    }
+                },
+                error: function (xhr) {
+                    console.error("Error retrieving candidates:", xhr.responseText);
+                }
+            });
+        }
+
+        // Function to load senators with checkboxes
+        function loadSenators() {
+            $.ajax({
+                url: '/User/GetCandidatesByPosition',
+                type: 'GET',
+                data: { positionName: "Senators" },
+                success: function (response) {
+                    var container = $('#senators-container');
+                    container.empty(); // Clear previous content
+
+                    if (response.success && response.data.length > 0) {
+                        $.each(response.data, function (index, candidate) {
+                            container.append(
+                                '<div>' +
+                                '<input type="checkbox" class="senator-checkbox" id="senator-' + candidate.candidateId + '" value="' + candidate.candidateId + '">' +
+                                '<label for="senator-' + candidate.candidateId + '"> ' + candidate.fullName + '</label>' +
+                                '</div>'
+                            );
+                        });
+                    } else {
+                        container.append('<p>No candidates found</p>');
+                    }
+                },
+                error: function (xhr) {
+                    console.error("Error retrieving senators:", xhr.responseText);
+                }
+            });
+        }
+         // Function to load mid senators with checkboxes
+        function loadMidSenators() {
+            $.ajax({
+                url: '/User/GetCandidatesByPosition',
+                type: 'GET',
+                data: { positionName: "Senators" },
+                success: function (response) {
+                    var container = $('#mid-senators-container');
+                    container.empty(); // Clear previous content
+
+                    if (response.success && response.data.length > 0) {
+                        $.each(response.data, function (index, candidate) {
+                            container.append(
+                                '<div>' +
+                                '<input type="checkbox" class="mid-senator-checkbox" id="senator-' + candidate.candidateId + '" value="' + candidate.candidateId + '">' +
+                                '<label for="senator-' + candidate.candidateId + '"> ' + candidate.fullName + '</label>' +
+                                '</div>'
+                            );
+                        });
+                    } else {
+                        container.append('<p>No candidates found</p>');
+                    }
+                },
+                error: function (xhr) {
+                    console.error("Error retrieving senators:", xhr.responseText);
+                }
+            });
+        }
+
+         // Function to load sangguniang panlalawigan with checkboxes
+        function loadMidSanggunianPanlalawigan() {
+            $.ajax({
+                url: '/User/GetCandidatesByPosition',
+                type: 'GET',
+                data: { positionName: "Sangguniang Panlalawigan Members" },
+                success: function (response) {
+                    var container = $('#mid-sanggunianPanlalawigan-container');
+                    container.empty(); // Clear previous content
+
+                    if (response.success && response.data.length > 0) {
+                        $.each(response.data, function (index, candidate) {
+                            container.append(
+                                '<div>' +
+                                '<input type="checkbox" class="mid-sanggunianPanlalawigan-checkbox" id="mid-sanggunianPanlalawigan-' + candidate.candidateId + '" value="' + candidate.candidateId + '">' +
+                                '<label for="mid-sanggunianPanlalawigan-' + candidate.candidateId + '"> ' + candidate.fullName + '</label>' +
+                                '</div>'
+                            );
+                        });
+                    } else {
+                        container.append('<p>No candidates found</p>');
+                    }
+                },
+                error: function (xhr) {
+                    console.error("Error retrieving Sangguniang Panlalawigan:", xhr.responseText);
+                }
+            });
+        }
+
+         function loadMidSanggunianBayan() {
+            $.ajax({
+                url: '/User/GetCandidatesByPosition',
+                type: 'GET',
+                data: { positionName: "Sangguniang Panlungsod/Bayan Members" },
+                success: function (response) {
+                    var container = $('#mid-sanggunianBayan-container');
+                    container.empty(); // Clear previous content
+
+                    if (response.success && response.data.length > 0) {
+                        $.each(response.data, function (index, candidate) {
+                            container.append(
+                                '<div>' +
+                                '<input type="checkbox" class="mid-sanggunianBayan-checkbox" id="mid-sanggunianBayan-' + candidate.candidateId + '" value="' + candidate.candidateId + '">' +
+                                '<label for="mid-sanggunianBayan-' + candidate.candidateId + '"> ' + candidate.fullName + '</label>' +
+                                '</div>'
+                            );
+                        });
+                    } else {
+                        container.append('<p>No candidates found</p>');
+                    }
+                },
+                error: function (xhr) {
+                    console.error("Error retrieving Sangguniang Bayan:", xhr.responseText);
+                }
+            });
+        }
+
+         function loadMidSanggunianBarangay() {
+            $.ajax({
+                url: '/User/GetCandidatesByPosition',
+                type: 'GET',
+                data: { positionName: "Sangguniang Barangay Members" },
+                success: function (response) {
+                    var container = $('#mid-sanggunianBarangay-container');
+                    container.empty(); // Clear previous content
+
+                    if (response.success && response.data.length > 0) {
+                        $.each(response.data, function (index, candidate) {
+                            container.append(
+                                '<div>' +
+                                '<input type="checkbox" class="mid-sanggunianBarangay-checkbox" id="mid-sanggunianBarangay-' + candidate.candidateId + '" value="' + candidate.candidateId + '">' +
+                                '<label for="mid-sanggunianBarangay-' + candidate.candidateId + '"> ' + candidate.fullName + '</label>' +
+                                '</div>'
+                            );
+                        });
+                    } else {
+                        container.append('<p>No candidates found</p>');
+                    }
+                },
+                error: function (xhr) {
+                    console.error("Error retrieving Sangguniang Bayan:", xhr.responseText);
+                }
+            });
+        }
+
+        // Load candidates for all positions
+        loadCandidates("President", "president");
+        loadCandidates("Vice President", "vp");
+        loadCandidates("District Representatives", "districtRep");
+        loadCandidates("Party-List Representatives", "partyListRep");
+        loadCandidates("Midterm District Representatives", "midDistrictRep");
+        loadCandidates("Midterm Party-List Representatives", "midPartyListRep");
+        loadCandidates("Regional Governor", "midRegionalGovernor");
+        loadCandidates("Regional Vice Governor", "midRegionalViceGovernor");
+        loadCandidates("Governor", "midProvincialGovernor");
+        loadCandidates("Vice Governor", "midProvincialViceGovernor");
+        loadCandidates("City/Municipal Mayor", "midMayor");
+        loadCandidates("City/Municipal Vice Mayor", "midViceMayor");
+        loadCandidates("Barangay Captain (Punong Barangay)", "midBarangayCaptain");
+
+        loadMidSenators();
+        loadSenators();
+        loadMidSanggunianPanlalawigan();
+        loadMidSanggunianBayan();
+        loadMidSanggunianBarangay();
+
+
+
+        // Limit selection to 12 senators
+        $(document).on("change", ".senator-checkbox", function () {
+            let checkedCount = $(".senator-checkbox:checked").length;
+            $("#senators-count").text(checkedCount);
+
+            if (checkedCount > 12) {
+                $(this).prop("checked", false);
+                alert("You can only select up to 12 senators.");
+            }
+        });
+
+                    // Limit selection to 12 mid senators
+        $(document).on("change", ".mid-senator-checkbox", function () {
+            let checkedCount = $(".mid-senator-checkbox:checked").length;
+            $("#mid-senators-count").text(checkedCount);
+
+            if (checkedCount > 12) {
+                $(this).prop("checked", false);
+                alert("You can only select up to 12 senators.");
+            }
+        });
+
+         // Limit selection to 5 Sangguniang Panlalawigan
+        $(document).on("change", ".mid-sanggunianPanlalawigan-checkbox", function () {
+            let checkedCount = $(".mid-sanggunianPanlalawigan-checkbox:checked").length;
+            $("#mid-sanggunianPanlalawigan-count").text(checkedCount);
+
+            if (checkedCount > 5) {
+                $(this).prop("checked", false);
+                alert("You can only select up to 5 Members.");
+            }
+        });
+
+         // Limit selection to 5 Sangguniang Bayan
+        $(document).on("change", ".mid-sanggunianBayan-checkbox", function () {
+            let checkedCount = $(".mid-sanggunianBayan-checkbox:checked").length;
+            $("#mid-sanggunianBayan-count").text(checkedCount);
+
+            if (checkedCount > 10) {
+                $(this).prop("checked", false);
+                alert("You can only select up to 10 Members.");
+            }
+        });
+
+          // Limit selection to 10 Sangguniang Barangay
+        $(document).on("change", ".mid-sanggunianBarangay-checkbox", function () {
+            let checkedCount = $(".mid-sanggunianBarangay-checkbox:checked").length;
+            $("#mid-sanggunianBarangay-count").text(checkedCount);
+
+            if (checkedCount > 7) {
+                $(this).prop("checked", false);
+                alert("You can only select up to 7 Members.");
+            }
+        });
+    });
+
+
+</script>
+
+<script>
+           $(document).ready(function () {
+        $("#submitVote").click(function (e) {
+            e.preventDefault();
+
+            let voterId = 22; // Replace with dynamic voter ID from session or authentication
+
+            // Collect selected candidates
+            let selectedSenators = $(".senator-checkbox:checked").map(function () {
+                return parseInt(this.value); // Convert to integer
+            }).get();
+
+            let selectedMidSenators = $(".mid-senator-checkbox:checked").map(function () {
+                return parseInt(this.value); // Convert to integer
+            }).get();
+
+             let selectedMidSanggunianPanlalawigan = $(".mid-sanggunianPanlalawigan-checkbox:checked").map(function () {
+                return parseInt(this.value); // Convert to integer
+            }).get();
+
+             let selectedMidSanggunianBayan = $(".mid-sanggunianBayan-checkbox:checked").map(function () {
+                return parseInt(this.value); // Convert to integer
+            }).get();
+
+             let selectedMidSanggunianBarangay = $(".mid-sanggunianBarangay-checkbox:checked").map(function () {
+                return parseInt(this.value); // Convert to integer
+            }).get();
+
+             let electionId = parseInt($("#electionId").val()); // Retrieve electionId
+
+            if (!electionId) {
+                alert("Election ID is missing!");
+                return;
+            }
+
+            // Create vote data object
+            let voteData = {
+                VoterId: voterId,
+                    ElectionId: electionId, // ✅ Include ElectionId
+                PresidentId: $("#president").val() ? parseInt($("#president").val()) : 0,
+                VicePresidentId: $("#vp").val() ? parseInt($("#vp").val()) : 0,
+                DistrictRepId: $("#districtRep").val() ? parseInt($("#districtRep").val()) : 0,
+                PartyListRepId: $("#partyListRep").val() ? parseInt($("#partyListRep").val()) : 0,
+                Senators: selectedSenators,
+                MidSenators: selectedMidSenators,
+                MidSanggunianPanlalawigan: selectedMidSanggunianPanlalawigan,
+                MidSanggunianBayan: selectedMidSanggunianBayan,
+                MidSanggunianBarangay: selectedMidSanggunianBarangay,
+
+                MidDistrictRepId:  $("#midDistrictRep").val() ? parseInt($("#midDistrictRep").val()) : 0,
+                MidPartyListRepId:  $("#midPartyListRep").val() ? parseInt($("#midPartyListRep").val()) : 0,
+                MidRegionalGovernorId:  $("#midRegionalGovernor").val() ? parseInt($("#midRegionalGovernor").val()) : 0,
+                MidRegionalViceGovernorId:  $("#midRegionalViceGovernor").val() ? parseInt($("#midRegionalViceGovernor").val()) : 0,
+                MidProvincialGovernorId:  $("#midProvincialGovernor").val() ? parseInt($("#midProvincialGovernor").val()) : 0,
+                MidProvincialViceGovernorId:  $("#midProvincialViceGovernor").val() ? parseInt($("#midProvincialViceGovernor").val()) : 0,
+                MidMayorId:  $("#midMayor").val() ? parseInt($("#midMayor").val()) : 0,
+                MidViceMayorId:  $("#midViceMayor").val() ? parseInt($("#midViceMayor").val()) : 0,
+                MidBarangayCaptainId:  $("#midBarangayCaptain").val() ? parseInt($("#midBarangayCaptain").val()) : 0,
+
+            };
+
+            // Add detailed console logging for debugging
+            console.log("Vote Data being sent:", JSON.stringify(voteData, null, 2));
+
+            $.ajax({
+                url: "/User/SubmitVote",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(voteData),
+                success: function (response) {
+                    console.log("Server response:", response);
+                    if (response.success) {
+                        alert("Vote submitted successfully!");
+                        location.reload();
+                    } else {
+                        alert("Server error: " + response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Vote submission error status:", status);
+                    console.error("Error details:", error);
+                    console.error("Response text:", xhr.responseText);
+                    console.error("Status code:", xhr.status);
+
+                    // Try to parse the error response if possible
+                    try {
+                        const errorResponse = JSON.parse(xhr.responseText);
+                        alert("Server error: " + (errorResponse.message || "Unknown error occurred"));
+                    } catch (e) {
+                        alert("An error occurred while submitting your vote. Please check the console for details.");
+                    }
+                }
+            });
+        });
+    });
+
+</script>

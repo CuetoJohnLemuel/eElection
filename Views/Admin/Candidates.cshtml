@@ -183,7 +183,14 @@
                                                         <td>@candidate.FullName</td>
                                                         <td>@candidate.PartyName</td>
                                                         <td>@candidate.PositionName</td>
-                                                        <td>@candidate.Biography</td>
+                                                        <td>
+                                                             <button class="btn btn-primary btn-sm view-biography" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#biographyModal" 
+                                                        data-biography="@candidate.Biography">
+                                                    View Biography
+                                                </button>
+                                                        </td>
                                                         <td>
                                                             <button class="btn btn-info btn-sm edit-btn" data-id="@candidate.CandidateId">Edit</button>
                                                             <button class="btn btn-danger btn-sm delete-btn" data-id="@candidate.CandidateId">Delete</button>
@@ -201,6 +208,21 @@
                     </div>
 
                 </div>
+
+       <!-- Biography Modal -->
+<div class="modal fade" id="biographyModal" tabindex="-1" aria-labelledby="biographyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="biographyModalLabel">Candidate Biography</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="biographyContent"></p>
+            </div>
+        </div>
+    </div>
+</div>
 
                 <!-- Modal for Adding Candidate -->
                 <div class="modal fade" id="addCandidateModal" tabindex="-1" aria-labelledby="addCandidateModalLabel" aria-hidden="true">
@@ -363,6 +385,18 @@
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <!-- Initialize Select2 -->
+
+   <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Event listener for biography button
+        document.querySelectorAll(".view-biography").forEach(button => {
+            button.addEventListener("click", function () {
+                let biography = this.getAttribute("data-biography"); 
+                document.getElementById("biographyContent").textContent = biography; 
+            });
+        });
+    });
+</script>
     <script>
              $(document).ready(function() {
             // Initialize Select2 on all dropdowns

@@ -25,21 +25,56 @@ namespace eElection.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Voter")]
-        public IActionResult Ballot(string electionType)
+        [HttpGet]
+        public IActionResult GetPositions()
         {
-            if (string.IsNullOrEmpty(electionType))
+            var positions = _context.Positions
+                .Where(p => p.PositionName != null) // Ensure no null PositionNames
+                .Select(p => new { p.PositionId, PositionName = p.PositionName.Trim() }) // Trim spaces
+                .ToList();
+
+            if (positions.Count == 0)
             {
-                return BadRequest("Election type is required.");
+                return Json(new { success = false, message = "No positions found." });
             }
 
-            Console.WriteLine($"Election Type received: {electionType}");
+            // Log the positions for debugging
+            Console.WriteLine("Positions returned from database:");
+            foreach (var position in positions)
+            {
+                Console.WriteLine($"PositionId: {position.PositionId}, PositionName: {position.PositionName}");
+            }
 
-            // Pass the election type to the view
-            ViewBag.ElectionType = electionType;
+            return Json(new { success = true, data = positions });
+        }
+
+
+
+        [Authorize(Roles = "Voter")]
+        public IActionResult Ballot(int? electionId)
+        {
+            if (electionId == null)
+            {
+                return RedirectToAction("Index"); // Redirect to another page if electionId is missing
+            }
+
+            var election = _context.Elections
+                .Where(e => e.ElectionId == electionId)
+                .Select(e => new { e.ElectionId, e.ElectionTypes })
+                .FirstOrDefault();
+
+            if (election == null)
+            {
+                return NotFound("Election not found.");
+            }
+
+            // Store election data in ViewBag
+            ViewBag.ElectionId = election.ElectionId;
+            ViewBag.ElectionTypes = election.ElectionTypes ?? ""; // Ensure it's not null
 
             return View();
         }
+
 
         [HttpGet]
         public IActionResult GetCandidatesByPosition(string positionName)
@@ -78,69 +113,43 @@ namespace eElection.Controllers
             }
         }
         [HttpPost]
-        public IActionResult SubmitVote([FromBody] VoteRequest voteRequest)
+        public IActionResult SubmitVote([FromBody] List<VoteRequest> votes)
         {
             try
             {
-                // Log the incoming request for debugging
-                Console.WriteLine($"Received vote request: {JsonConvert.SerializeObject(voteRequest)}");
-
-                if (voteRequest == null)
+                if (votes == null || votes.Count == 0)
                 {
-                    Console.WriteLine("Vote request is null");
-                    return Json(new { success = false, message = "Vote request is null" });
+                    return Json(new { success = false, message = "No votes received." });
                 }
 
-                if (voteRequest.VoterId == 0)
+                // Log the received votes for debugging
+                Console.WriteLine("Received votes:");
+                foreach (var vote in votes)
                 {
-                    Console.WriteLine("Invalid voter ID");
-                    return Json(new { success = false, message = "Invalid voter ID" });
+                    Console.WriteLine($"VoterId: {vote.VoterId}, ElectionId: {vote.ElectionId}, PositionId: {vote.PositionId}, CandidateId: {vote.CandidateId}");
                 }
 
-                // Start building the vote object
-                var newVote = new Vote
+                foreach (var vote in votes)
                 {
-                    VoterId = voteRequest.VoterId,
-                    // National election fields
-                    PresidentId = voteRequest.PresidentId > 0 ? voteRequest.PresidentId : null,
-                    VicePresidentId = voteRequest.VicePresidentId > 0 ? voteRequest.VicePresidentId : null,
-                    DistrictRepId = voteRequest.DistrictRepId > 0 ? voteRequest.DistrictRepId : null,
-                    PartyListRepId = voteRequest.PartyListRepId > 0 ? voteRequest.PartyListRepId : null,
-                    // Handle senator lists
-                    Senators = voteRequest.Senators != null && voteRequest.Senators.Any()
-                        ? string.Join(",", voteRequest.Senators)
-                        : null,
-                    MidSenators = voteRequest.MidSenators != null && voteRequest.MidSenators.Any()
-                        ? string.Join(",", voteRequest.MidSenators)
-                        : null
-                };
+                    var newVote = new Vote
+                    {
+                        VoterId = vote.VoterId,
+                        ElectionId = vote.ElectionId,
+                        PositionId = vote.PositionId,
+                        CandidateId = vote.CandidateId
+                    };
 
-                // Add to database
-                Console.WriteLine("Adding vote to database");
-                _context.Votes.Add(newVote);
+                    _context.Votes.Add(newVote);
+                }
 
-                // Save changes and capture the number of affected rows
-                int rowsAffected = _context.SaveChanges();
-                Console.WriteLine($"SaveChanges completed. Rows affected: {rowsAffected}");
-
-                return Json(new { success = true, message = "Vote submitted successfully!" });
-            }
-            catch (DbUpdateException dbEx)
-            {
-                // Handle database-specific exceptions
-                Console.WriteLine($"Database error while submitting vote: {dbEx.Message}");
-                Console.WriteLine($"Inner exception: {dbEx.InnerException?.Message}");
-                return Json(new { success = false, message = $"Database error: {dbEx.InnerException?.Message ?? dbEx.Message}" });
+                _context.SaveChanges();
+                return Json(new { success = true, message = "Votes submitted successfully!" });
             }
             catch (Exception ex)
             {
-                // Handle general exceptions
-                Console.WriteLine($"Error submitting vote: {ex.Message}");
-                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
                 return Json(new { success = false, message = $"Error: {ex.Message}" });
             }
         }
-
 
         [Authorize(Roles = "Voter")]
         public IActionResult Elections()
@@ -148,6 +157,7 @@ namespace eElection.Controllers
             var elections = _context.Elections
                 .Select(e => new Election
                 {
+                    ElectionId = e.ElectionId,
                     ElectionName = e.ElectionName,
                     ElectionTypes = e.ElectionTypes
                 })

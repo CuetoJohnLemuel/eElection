@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eElection.Data;
 
@@ -11,9 +12,11 @@ using eElection.Data;
 namespace eElection.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250318005401_RemoveNInSangunian")]
+    partial class RemoveNInSangunian
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -642,16 +645,25 @@ namespace eElection.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VoteId"));
 
-                    b.Property<int>("CandidateId")
+                    b.Property<int?>("DistrictRepId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("MidSanggunianPanlalawigan")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ElectionId")
+                    b.Property<string>("MidSenators")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PartyListRepId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PositionId")
+                    b.Property<int?>("PresidentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Senators")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("VicePresidentId")
                         .HasColumnType("int");
 
                     b.Property<int>("VoterId")
