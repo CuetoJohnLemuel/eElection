@@ -28,5 +28,6 @@ namespace eElection.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public virtual ICollection<Candidate>? Candidates { get; set; }
+        //public virtual ICollection<ElectionTypePositions>? ElectionTypePositions { get; set; }
     }
 }

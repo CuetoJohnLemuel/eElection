@@ -75,7 +75,6 @@ namespace eElection.Controllers
             return View();
         }
 
-
         [HttpGet]
         public IActionResult GetCandidatesByPosition(string positionName)
         {
@@ -89,13 +88,12 @@ namespace eElection.Controllers
                 var candidates = _context.Candidates
                     .Include(c => c.Voter)
                     .Include(c => c.Position)
-                    .Where(c => c.Position != null && c.Position.PositionName.ToLower() == positionName.ToLower()) // Case insensitive
+                    .Where(c => c.Position != null && c.Position.PositionName.ToLower() == positionName.ToLower())
                     .Select(c => new
                     {
                         c.CandidateId,
                         FullName = c.Voter != null ? $"{c.Voter.FirstName} {c.Voter.LastName}" : "Unknown",
-                        Position = c.Position != null ? c.Position.PositionName : "Unknown",
-                        c.PartyId,
+                        PositionId = c.PositionId // ✅ Ensure PositionId is included
                     })
                     .ToList();
 
@@ -108,10 +106,10 @@ namespace eElection.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error fetching candidates: {ex.Message}");
-                return Json(new { success = false, message = "An error occurred while fetching candidates." });
+                return Json(new { success = false, message = $"Error: {ex.Message}" });
             }
         }
+
         [HttpPost]
         public IActionResult SubmitVote([FromBody] List<VoteRequest> votes)
         {
@@ -122,7 +120,6 @@ namespace eElection.Controllers
                     return Json(new { success = false, message = "No votes received." });
                 }
 
-                // Log the received votes for debugging
                 Console.WriteLine("Received votes:");
                 foreach (var vote in votes)
                 {
@@ -150,6 +147,7 @@ namespace eElection.Controllers
                 return Json(new { success = false, message = $"Error: {ex.Message}" });
             }
         }
+
 
         [Authorize(Roles = "Voter")]
         public IActionResult Elections()

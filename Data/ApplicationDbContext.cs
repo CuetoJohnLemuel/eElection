@@ -19,9 +19,24 @@ namespace eElection.Data
         public DbSet<Announcement> Announcements { get; set; }
         public DbSet<Vote> Votes { get; set; }
         public DbSet<VoteDetail> VoteDetails { get; set; }
+        public DbSet<ElectionType> ElectionTypes { get; set; }
+        public DbSet<ElectionTypePositions> ElectionTypePositions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ElectionTypePositions>()
+            .HasKey(etp => new { etp.ElectionTypeId, etp.PositionId });
+
+            modelBuilder.Entity<ElectionTypePositions>()
+               .HasOne(etp => etp.ElectionType)
+               .WithMany(et => et.ElectionTypePositions)
+               .HasForeignKey(etp => etp.ElectionTypeId);
+
+            modelBuilder.Entity<ElectionTypePositions>()
+                .HasOne(etp => etp.Position)
+                .WithMany(p => p.ElectionTypePositions)
+                .HasForeignKey(etp => etp.PositionId);
+
             modelBuilder.Entity<Candidate>()
             .HasOne(c => c.Election)
             .WithMany(e => e.Candidates)

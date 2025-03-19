@@ -53,6 +53,13 @@ namespace eElection.Controllers
         }
 
         [Authorize(Roles = "Admin")]
+        public IActionResult ElectionTypes()
+        {
+            var electionTypes = _context.ElectionTypes.ToList(); 
+            return View(electionTypes);
+        }
+
+        [Authorize(Roles = "Admin")]
         public IActionResult Candidates()
         {
             // Retrieve candidates with related table data
@@ -229,6 +236,74 @@ namespace eElection.Controllers
             ViewBag.CandidateCount = candidateCount;
             return View();
         }
+        public async Task<IActionResult> ElectionTypePositions()
+        {
+            var electionTypePositions = await _context.ElectionTypePositions
+                .Include(etp => etp.ElectionType)
+                .Include(etp => etp.Position)
+                .ToListAsync();
+
+            // Pass ElectionTypes and Positions to the view for dropdowns
+            ViewBag.ElectionTypes = await _context.ElectionTypes.ToListAsync();
+            ViewBag.Positions = await _context.Positions.ToListAsync();
+
+            return View(electionTypePositions);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddElectionTypePosition([FromBody] ElectionTypePositions model)
+        {
+            if (!ModelState.IsValid)
+            {
+                // Log validation errors
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                Console.WriteLine("Validation Errors: " + string.Join(", ", errors));
+                return Json(new { success = false, message = "Invalid data.", errors = errors });
+            }
+
+            try
+            {
+                // Log the received data
+                Console.WriteLine("Received ElectionTypePosition: ElectionTypeId=" + model.ElectionTypeId + ", PositionId=" + model.PositionId);
+
+                // Save to database
+                _context.ElectionTypePositions.Add(model);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Position added to Election Type successfully!" });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                Console.WriteLine("Error: " + ex.Message);
+                return Json(new { success = false, message = "An error occurred: " + ex.Message });
+            }
+        }
+
+        // POST: Admin/DeleteElectionTypePosition
+        [HttpPost]
+        public async Task<IActionResult> DeleteElectionTypePosition(int id)
+        {
+            try
+            {
+                var electionTypePosition = await _context.ElectionTypePositions.FindAsync(id);
+                if (electionTypePosition == null)
+                {
+                    return Json(new { success = false, message = "Record not found." });
+                }
+
+                _context.ElectionTypePositions.Remove(electionTypePosition);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Position removed from Election Type successfully!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred: " + ex.Message });
+            }
+        }
+
+
         [Authorize(Roles = "Admin")]
         public IActionResult Candidate()
         {
@@ -391,6 +466,86 @@ namespace eElection.Controllers
             catch (Exception)
             {
                 return Json(new { success = false, message = "An error occurred while deleting the announcement." });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult AddElectionType([FromBody] ElectionType model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); // Return validation errors
+            }
+
+            try
+            {
+                // Save to database
+                _context.ElectionTypes.Add(model);
+                _context.SaveChanges();
+
+                return Json(new { success = true, message = "Election type added successfully!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred while saving the election type." });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetElectionType(int id)
+        {
+            var electionType = _context.ElectionTypes.Find(id);
+            if (electionType == null)
+            {
+                return NotFound();
+            }
+            return Json(electionType);
+        }
+
+        [HttpPost]
+        public IActionResult EditElectionType([FromBody] ElectionType model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var existingElectionType = _context.ElectionTypes.Find(model.ElectionTypeId);
+            if (existingElectionType == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                existingElectionType.ElectionTypeName = model.ElectionTypeName;
+                _context.SaveChanges();
+                return Json(new { success = true, message = "Election type updated successfully!" });
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "An error occurred while updating the election type." });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult DeleteElectionType(int id)
+        {
+            var electionType = _context.ElectionTypes.Find(id);
+            if (electionType == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                _context.ElectionTypes.Remove(electionType);
+                _context.SaveChanges();
+                return Json(new { success = true, message = "Election type deleted successfully!" });
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "An error occurred while deleting the election type." });
             }
         }
 

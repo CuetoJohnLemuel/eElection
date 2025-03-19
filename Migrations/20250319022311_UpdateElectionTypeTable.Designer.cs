@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eElection.Data;
 
@@ -11,9 +12,11 @@ using eElection.Data;
 namespace eElection.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250319022311_UpdateElectionTypeTable")]
+    partial class UpdateElectionTypeTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,7 +64,7 @@ namespace eElection.Migrations
                         .IsUnique()
                         .HasFilter("[VoterId] IS NOT NULL");
 
-                    b.ToTable("Account", (string)null);
+                    b.ToTable("Account");
 
                     b.HasData(
                         new
@@ -160,7 +163,7 @@ namespace eElection.Migrations
 
                     b.HasKey("AnnouncementId");
 
-                    b.ToTable("Announcements", (string)null);
+                    b.ToTable("Announcements");
 
                     b.HasData(
                         new
@@ -225,7 +228,7 @@ namespace eElection.Migrations
 
                     b.HasIndex("VoterId");
 
-                    b.ToTable("Candidates", (string)null);
+                    b.ToTable("Candidates");
 
                     b.HasData(
                         new
@@ -313,7 +316,7 @@ namespace eElection.Migrations
 
                     b.HasKey("ElectionId");
 
-                    b.ToTable("Elections", (string)null);
+                    b.ToTable("Elections");
 
                     b.HasData(
                         new
@@ -356,32 +359,13 @@ namespace eElection.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ElectionTypeId"));
 
-                    b.Property<string>("ElectionTypeName")
-                        .IsRequired()
+                    b.Property<int>("ElectionTypeName")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("int");
 
                     b.HasKey("ElectionTypeId");
 
-                    b.ToTable("ElectionTypes", (string)null);
-                });
-
-            modelBuilder.Entity("eElection.Models.ElectionTypePositions", b =>
-                {
-                    b.Property<int>("ElectionTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PositionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.HasKey("ElectionTypeId", "PositionId");
-
-                    b.HasIndex("PositionId");
-
-                    b.ToTable("ElectionTypePositions", (string)null);
+                    b.ToTable("ElectionTypes");
                 });
 
             modelBuilder.Entity("eElection.Models.Party", b =>
@@ -410,7 +394,7 @@ namespace eElection.Migrations
 
                     b.HasKey("PartyId");
 
-                    b.ToTable("Parties", (string)null);
+                    b.ToTable("Parties");
 
                     b.HasData(
                         new
@@ -545,7 +529,7 @@ namespace eElection.Migrations
 
                     b.HasKey("PositionId");
 
-                    b.ToTable("Positions", (string)null);
+                    b.ToTable("Positions");
 
                     b.HasData(
                         new
@@ -695,7 +679,7 @@ namespace eElection.Migrations
 
                     b.HasKey("VoteId");
 
-                    b.ToTable("Votes", (string)null);
+                    b.ToTable("Votes");
                 });
 
             modelBuilder.Entity("eElection.Models.VoteDetail", b =>
@@ -716,7 +700,7 @@ namespace eElection.Migrations
 
                     b.HasIndex("VoteId");
 
-                    b.ToTable("VoteDetails", (string)null);
+                    b.ToTable("VoteDetails");
                 });
 
             modelBuilder.Entity("eElection.Models.Voter", b =>
@@ -777,7 +761,7 @@ namespace eElection.Migrations
 
                     b.HasKey("VoterId");
 
-                    b.ToTable("Voters", (string)null);
+                    b.ToTable("Voters");
 
                     b.HasData(
                         new
@@ -910,25 +894,6 @@ namespace eElection.Migrations
                     b.Navigation("Voter");
                 });
 
-            modelBuilder.Entity("eElection.Models.ElectionTypePositions", b =>
-                {
-                    b.HasOne("eElection.Models.ElectionType", "ElectionType")
-                        .WithMany("ElectionTypePositions")
-                        .HasForeignKey("ElectionTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("eElection.Models.Position", "Position")
-                        .WithMany("ElectionTypePositions")
-                        .HasForeignKey("PositionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ElectionType");
-
-                    b.Navigation("Position");
-                });
-
             modelBuilder.Entity("eElection.Models.VoteDetail", b =>
                 {
                     b.HasOne("eElection.Models.Vote", "Vote")
@@ -945,11 +910,6 @@ namespace eElection.Migrations
                     b.Navigation("Candidates");
                 });
 
-            modelBuilder.Entity("eElection.Models.ElectionType", b =>
-                {
-                    b.Navigation("ElectionTypePositions");
-                });
-
             modelBuilder.Entity("eElection.Models.Party", b =>
                 {
                     b.Navigation("Candidates");
@@ -958,8 +918,6 @@ namespace eElection.Migrations
             modelBuilder.Entity("eElection.Models.Position", b =>
                 {
                     b.Navigation("Candidates");
-
-                    b.Navigation("ElectionTypePositions");
                 });
 
             modelBuilder.Entity("eElection.Models.Voter", b =>
