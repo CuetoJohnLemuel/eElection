@@ -115,6 +115,15 @@ namespace eElection.Controllers
         {
             try
             {
+                // Get the logged-in voter's ID from claims
+                var voterIdClaim = User.Claims.FirstOrDefault(c => c.Type == "VoterId");
+                if (voterIdClaim == null)
+                {
+                    return Json(new { success = false, message = "Unauthorized: Voter ID not found." });
+                }
+
+                int voterId = int.Parse(voterIdClaim.Value); // Convert claim value to integer
+
                 if (votes == null || votes.Count == 0)
                 {
                     return Json(new { success = false, message = "No votes received." });
@@ -130,7 +139,7 @@ namespace eElection.Controllers
                 {
                     var newVote = new Vote
                     {
-                        VoterId = vote.VoterId,
+                        VoterId = voterId,
                         ElectionId = vote.ElectionId,
                         PositionId = vote.PositionId,
                         CandidateId = vote.CandidateId

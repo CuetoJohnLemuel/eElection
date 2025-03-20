@@ -109,16 +109,16 @@
                                     <tr>
                                         <td>Vice President</td>
                                         <td>
-                                                <select class="form-select candidate-dropdown" id="vp" data-position="Vice President">
-                                                    <option value="">Select Candidate</option>
-                                                </select>
+                                            <select class="form-select candidate-dropdown" id="vp" data-position="Vice President">
+                                                <option value="">Select Candidate</option>
+                                            </select>
                                         </td>
                                     </tr>
                                      <tr> 
                                          <td>Senators (Choose up to 12)</td> 
                                              <td> 
-                                                    <div id="senators-container"></div>
-        <p><small>Selected: <span id="senators-count">0</span>/12</small></p>
+                                                <div id="senators-container"></div>
+                                                <p><small>Selected: <span id="senators-count">0</span>/12</small></p>
                                              </td> 
                                      </tr> 
                                     <tr>
@@ -141,134 +141,132 @@
                             </div>
                         </div>
                     }
+                        @if (electionTypes.Contains("Midterm Elections"))
+                        {
+                            <!-- Midterm Elections -->
+                            <div class="card mb-3 election-section" id="midtermSection">
+                                <div class="card-header bg-secondary text-white">Midterm Elections</div>
+                                <div class="card-body">
+                                    <p><strong>Midterm Elections (Every 3 Years, Between Presidential Elections)</strong></p>
 
-
-                    @if (electionTypes.Contains("Midterm Elections"))
-                    {
-                        <!-- Midterm Elections -->
-                        <div class="card mb-3 election-section" id="midtermSection">
-                            <div class="card-header bg-secondary text-white">Midterm Elections</div>
-                            <div class="card-body">
-                                <p><strong>Midterm Elections (Every 3 Years, Between Presidential Elections)</strong></p>
-
-                                <table class="table table-sm">
-                                    <!-- Senators (Choose up to 12) -->
-                                    <tr>
-                                        <td>Senators (Choose up to 12)</td>
-                                        <td>
-                                            <div id="mid-senators-container"></div>
-                                            <p><small>Selected: <span id="mid-senators-count">0</span>/12</small></p>
-                                        </td>
-                                    </tr>
-                                    <!-- District Representative -->
-                                    <tr>
-                                        <td>District Representative</td>
-                                        <td>
-                                            <select class="form-select" id="midDistrictRep">
-                                                <option value="">Select District Representative</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- Party-List Representative -->
-                                    <tr>
-                                        <td>Party-List Representative</td>
-                                        <td>
-                                            <select class="form-select" id="midPartyListRep">
-                                                <option value="">Select Party-List</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- Regional Governor -->
-                                    <tr>
-                                        <td>Regional Governor</td>
-                                        <td>
-                                            <select class="form-select" id="midRegionalGovernor">
-                                                <option value="">Select Governor</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- Regional Vice Governor -->
-                                    <tr>
-                                        <td>Regional Vice Governor</td>
-                                        <td>
-                                            <select class="form-select" id="midRegionalViceGovernor">
-                                                <option value="">Select Vice Governor</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- Provincial Governor -->
-                                    <tr>
-                                        <td>Governor</td>
-                                        <td>
-                                            <select class="form-select" id="midProvincialGovernor">
-                                                <option value="">Select Governor</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- Provincial Vice Governor -->
-                                    <tr>
-                                        <td>Vice Governor</td>
-                                        <td>
-                                            <select class="form-select" id="midProvincialViceGovernor">
-                                                <option value="">Select Vice Governor</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- Sangguniang Panlalawigan Members -->
-                                    <tr>
-                                        <td>Sangguniang Panlalawigan Members</td>
-                                        <td>
-                                            <div id="mid-sanggunianPanlalawigan-container"></div>
-                                            <p><small>Selected: <span id="mid-sanggunianPanlalawigan-count">0</span>/5</small></p>
-                                        </td>
-                                    </tr>
-                                    <!-- City/Municipal Mayor -->
-                                    <tr>
-                                        <td>Mayor</td>
-                                        <td>
-                                            <select class="form-select" id="midMayor">
-                                                <option value="">Select Mayor</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- City/Municipal Vice Mayor -->
-                                    <tr>
-                                        <td>Vice Mayor</td>
-                                        <td>
-                                            <select class="form-select" id="midViceMayor">
-                                                <option value="">Select Vice Mayor</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- Sangguniang Panlungsod/Bayan Members -->
-                                    <tr>
-                                        <td>Sangguniang Panlungsod/Bayan Members</td>
-                                        <td>
-                                            <div id="mid-sanggunianBayan-container"></div>
-                                            <p><small>Selected: <span id="mid-sanggunianBayan-count">0</span>/10</small></p>
-                                        </td>
-                                    </tr>
-                                    <!-- Barangay Captain -->
-                                    <tr>
-                                        <td>Barangay Captain</td>
-                                        <td>
-                                            <select class="form-select" id="midBarangayCaptain">
-                                                <option value="">Select Barangay Captain</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <!-- Sangguniang Barangay Members -->
-                                    <tr>
-                                        <td>Sangguniang Barangay Members</td>
-                                        <td>
-                                            <div id="mid-sanggunianBarangay-container"></div>
-                                            <p><small>Selected: <span id="mid-sanggunianBarangay-count">0</span>/7</small></p>
-                                        </td>
-                                    </tr>
-                                </table>
+                                    <table class="table table-sm">
+                                        <!-- Senators (Choose up to 12) -->
+                                        <tr>
+                                            <td>Senators (Choose up to 12)</td>
+                                            <td>
+                                                <div id="senators-container"></div>
+                                                <p><small>Selected: <span id="senators-count">0</span>/12</small></p>
+                                            </td>
+                                        </tr>
+                                        <!-- District Representative -->
+                                        <tr>
+                                            <td>District Representative</td>
+                                            <td>
+                                                <select class="form-select candidate-dropdown" id="districtRep" data-position="District Representatives">
+                                                    <option value="">Select Candidate</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Party-List Representative -->
+                                        <tr>
+                                            <td>Party-List Representative</td>
+                                            <td>
+                                                <select class="form-select candidate-dropdown" id="partyListRep" data-position="Party-List Representatives">
+                                                    <option value="">Select Candidate</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Regional Governor -->
+                                        <tr>
+                                            <td>Regional Governor</td>
+                                            <td>
+                                                <select class="form-select candidate-dropdown" id="regionalGovernor" data-position="Regional Governor">
+                                                    <option value="">Select Candidate</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Regional Vice Governor -->
+                                        <tr>
+                                            <td>Regional Vice Governor</td>
+                                            <td>
+                                                <select class="form-select candidate-dropdown" id="regionalViceGovernor" data-position="Regional Vice Governor">
+                                                    <option value="">Select Candidate</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Provincial Governor -->
+                                        <tr>
+                                            <td>Governor</td>
+                                            <td>
+                                                <select class="form-select candidate-dropdown" id="governor" data-position="Governor">
+                                                    <option value="">Select Candidate</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Provincial Vice Governor -->
+                                        <tr>
+                                            <td>Vice Governor</td>
+                                            <td>
+                                                <select class="form-select candidate-dropdown" id="viceGovernor" data-position="Vice Governor">
+                                                    <option value="">Select Candidate</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Sangguniang Panlalawigan Members -->
+                                        <tr>
+                                            <td>Sangguniang Panlalawigan Members</td>
+                                            <td>
+                                                <div id="sanggunianPanlalawigan-container"></div>
+                                                <p><small>Selected: <span id="sanggunianPanlalawigan-count">0</span>/5</small></p>
+                                            </td>
+                                        </tr>
+                                        <!-- City/Municipal Mayor -->
+                                        <tr>
+                                            <td>Mayor</td>
+                                            <td>
+                                                <select class="form-select candidate-dropdown" id="cityMunicipalMayor" data-position="City/Municipal Mayor">
+                                                    <option value="">Select Candidate</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- City/Municipal Vice Mayor -->
+                                        <tr>
+                                            <td>Vice Mayor</td>
+                                            <td>
+                                                <select class="form-select candidate-dropdown" id="cityMunicipalViceMayor" data-position="City/Municipal Vice Mayor">
+                                                    <option value="">Select Candidate</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Sangguniang Panlungsod/Bayan Members -->
+                                        <tr>
+                                            <td>Sangguniang Panlungsod/Bayan Members</td>
+                                            <td>
+                                                <div id="sanggunianPanlungsod-container"></div>
+                                                <p><small>Selected: <span id="sanggunianPanlungsod-count">0</span>/10</small></p>
+                                            </td>
+                                        </tr>
+                                        <!-- Barangay Captain -->
+                                        <tr>
+                                            <td>Barangay Captain</td>
+                                            <td>
+                                                <select class="form-select candidate-dropdown" id="barangayCaptain" data-position="Barangay Captain (Punong Barangay)">
+                                                    <option value="">Select Candidate</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <!-- Sangguniang Barangay Members -->
+                                        <tr>
+                                            <td>Sangguniang Barangay Members</td>
+                                            <td>
+                                                <div id="sanggunianBarangay-container"></div>
+                                                <p><small>Selected: <span id="sanggunianBarangay-count">0</span>/7</small></p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
-                    }
+                        }
 
                     @if (electionTypes.Contains("Regional Elections"))
                     {
@@ -283,11 +281,8 @@
                                     <tr>
                                         <td>Regional Governor</td>
                                         <td>
-                                            <select class="form-select" id="regionalGovernor">
+                                            <select class="form-select candidate-dropdown" id="regionalGovernor" data-position="Regional Governor">
                                                 <option value="">Select Candidate</option>
-                                                <option value="Candidate A">Candidate A</option>
-                                                <option value="Candidate B">Candidate B</option>
-                                                <option value="Candidate C">Candidate C</option>
                                             </select>
                                         </td>
                                     </tr>
@@ -295,26 +290,24 @@
                                     <tr>
                                         <td>Regional Vice Governor</td>
                                         <td>
-                                            <select class="form-select" id="regionalViceGovernor">
+                                            <select class="form-select candidate-dropdown" id="regionalViceGovernor" data-position="Regional Vice Governor">
                                                 <option value="">Select Candidate</option>
-                                                <option value="Candidate X">Candidate X</option>
-                                                <option value="Candidate Y">Candidate Y</option>
                                             </select>
                                         </td>
                                     </tr>
                                     <!-- Regional Assembly Members -->
-                                    <tr>
-                                        <td>Regional Assembly Members</td>
-                                        <td>
-                                            <select class="form-select" id="regionalAssemblyMembers" multiple>
-                                                <option value="Member 1">Member 1</option>
-                                                <option value="Member 2">Member 2</option>
-                                                <option value="Member 3">Member 3</option>
-                                                <option value="Member 4">Member 4</option>
-                                                <option value="Member 5">Member 5</option>
-                                            </select>
-                                        </td>
-                                    </tr>
+                                    @* <tr> *@
+                                    @*     <td>Regional Assembly Members</td> *@
+                                    @*     <td> *@
+                                    @*         <select class="form-select" id="regionalAssemblyMembers" multiple> *@
+                                    @*             <option value="Member 1">Member 1</option> *@
+                                    @*             <option value="Member 2">Member 2</option> *@
+                                    @*             <option value="Member 3">Member 3</option> *@
+                                    @*             <option value="Member 4">Member 4</option> *@
+                                    @*             <option value="Member 5">Member 5</option> *@
+                                    @*         </select> *@
+                                    @*     </td> *@
+                                    @* </tr> *@
                                 </table>
                             </div>
                         </div>
@@ -332,11 +325,8 @@
                                     <tr>
                                         <td>Governor</td>
                                         <td>
-                                            <select class="form-select" id="provincialGovernor">
+                                            <select class="form-select candidate-dropdown" id="governor" data-position="Governor">
                                                 <option value="">Select Candidate</option>
-                                                <option value="Candidate A">Candidate A</option>
-                                                <option value="Candidate B">Candidate B</option>
-                                                <option value="Candidate C">Candidate C</option>
                                             </select>
                                         </td>
                                     </tr>
@@ -344,10 +334,8 @@
                                     <tr>
                                         <td>Vice Governor</td>
                                         <td>
-                                            <select class="form-select" id="provincialViceGovernor">
+                                            <select class="form-select candidate-dropdown" id="viceGovernor" data-position="Vice Governor">
                                                 <option value="">Select Candidate</option>
-                                                <option value="Candidate X">Candidate X</option>
-                                                <option value="Candidate Y">Candidate Y</option>
                                             </select>
                                         </td>
                                     </tr>
@@ -355,13 +343,8 @@
                                     <tr>
                                         <td>Sangguniang Panlalawigan Members</td>
                                         <td>
-                                            <select class="form-select" id="provincialBoardMembers" multiple>
-                                                <option value="Member 1">Member 1</option>
-                                                <option value="Member 2">Member 2</option>
-                                                <option value="Member 3">Member 3</option>
-                                                <option value="Member 4">Member 4</option>
-                                                <option value="Member 5">Member 5</option>
-                                            </select>
+                                            <div id="sanggunianPanlalawigan-container"></div>
+                                            <p><small>Selected: <span id="sanggunianPanlalawigan-count">0</span>/5</small></p>
                                         </td>
                                     </tr>
                                 </table>
@@ -381,11 +364,8 @@
                                     <tr>
                                         <td>Mayor</td>
                                         <td>
-                                            <select class="form-select" id="cityMayor">
+                                            <select class="form-select candidate-dropdown" id="mayor" data-position="City/Municipal Mayor">
                                                 <option value="">Select Candidate</option>
-                                                <option value="Candidate A">Candidate A</option>
-                                                <option value="Candidate B">Candidate B</option>
-                                                <option value="Candidate C">Candidate C</option>
                                             </select>
                                         </td>
                                     </tr>
@@ -393,10 +373,8 @@
                                     <tr>
                                         <td>Vice Mayor</td>
                                         <td>
-                                            <select class="form-select" id="cityViceMayor">
+                                            <select class="form-select candidate-dropdown" id="viceMayor" data-position="City/Municipal Vice Mayor">
                                                 <option value="">Select Candidate</option>
-                                                <option value="Candidate X">Candidate X</option>
-                                                <option value="Candidate Y">Candidate Y</option>
                                             </select>
                                         </td>
                                     </tr>
@@ -404,13 +382,8 @@
                                     <tr>
                                         <td>Sangguniang Panlungsod/Bayan Members</td>
                                         <td>
-                                            <select class="form-select" id="cityCouncilMembers" multiple>
-                                                <option value="Member 1">Member 1</option>
-                                                <option value="Member 2">Member 2</option>
-                                                <option value="Member 3">Member 3</option>
-                                                <option value="Member 4">Member 4</option>
-                                                <option value="Member 5">Member 5</option>
-                                            </select>
+                                            <div id="sanggunianPanlungsod-container"></div>
+                                            <p><small>Selected: <span id="sanggunianPanlungsod-count">0</span>/10</small></p>
                                         </td>
                                     </tr>
                                 </table>
@@ -430,11 +403,8 @@
                                     <tr>
                                         <td>Barangay Captain (Punong Barangay)</td>
                                         <td>
-                                            <select class="form-select" id="barangayCaptain">
+                                            <select class="form-select candidate-dropdown" id="barangayCaptain" data-position="Barangay Captain (Punong Barangay)">
                                                 <option value="">Select Candidate</option>
-                                                <option value="Candidate A">Candidate A</option>
-                                                <option value="Candidate B">Candidate B</option>
-                                                <option value="Candidate C">Candidate C</option>
                                             </select>
                                         </td>
                                     </tr>
@@ -442,20 +412,10 @@
                                     <tr>
                                         <td>Sangguniang Barangay Members</td>
                                         <td>
-                                            <select class="form-select" id="barangayCouncilMembers" multiple>
-                                                <option value="Member 1">Member 1</option>
-                                                <option value="Member 2">Member 2</option>
-                                                <option value="Member 3">Member 3</option>
-                                                <option value="Member 4">Member 4</option>
-                                                <option value="Member 5">Member 5</option>
-                                                <option value="Member 6">Member 6</option>
-                                                <option value="Member 7">Member 7</option>
-                                            </select>
+                                            <div id="sanggunianBarangay-container"></div>
+                                            <p><small>Selected: <span id="sanggunianBarangay-count">0</span>/7</small></p>
                                         </td>
                                     </tr>
-
-                                   
-                                       
                                 </table>
                             </div>
                         </div>
@@ -474,11 +434,8 @@
                                         <tr>
                                             <td>SK Chairman (Youth Leader of the Barangay)</td>
                                             <td>
-                                                <select class="form-select" id="skChairman">
+                                                <select class="form-select candidate-dropdown" id="skChairman" data-position="Sangguniang Kabataan (SK) Chairman">
                                                     <option value="">Select Candidate</option>
-                                                    <option value="Candidate A">Candidate A</option>
-                                                    <option value="Candidate B">Candidate B</option>
-                                                    <option value="Candidate C">Candidate C</option>
                                                 </select>
                                             </td>
                                         </tr>
@@ -486,15 +443,8 @@
                                         <tr>
                                             <td>SK Members (Youth Legislative Body)</td>
                                             <td>
-                                                <select class="form-select" id="skMembers" multiple>
-                                                    <option value="Member 1">Member 1</option>
-                                                    <option value="Member 2">Member 2</option>
-                                                    <option value="Member 3">Member 3</option>
-                                                    <option value="Member 4">Member 4</option>
-                                                    <option value="Member 5">Member 5</option>
-                                                    <option value="Member 6">Member 6</option>
-                                                    <option value="Member 7">Member 7</option>
-                                                </select>
+                                                <div id="sanggunianKabataan-container"></div>
+                                                <p><small>Selected: <span id="sanggunianKabataan-count">0</span>/7</small></p>
                                             </td>
                                         </tr>
                                     </table>
@@ -543,8 +493,12 @@
 
     <script>
         $(document).ready(function () {
-            let positionMap = {}; // Store positionId mappings
-            let selectedSenators = []; // Store selected senators
+            let positionMap = {};
+            let selectedSenators = [];
+            let selectedSanggunianPanlalawigan = [];
+            let selectedSanggunianPanlungsod = [];
+            let selectedSanggunianBarangay = [];
+            let selectedSanggunianKabataan = [];
 
             function loadPositions() {
                 $.ajax({
@@ -575,7 +529,11 @@
                         });
 
                         loadAllCandidates();
-                        loadSenators(); // Load senators separately
+                        loadSenators();
+                        loadSanggunianPanlalawigan();
+                        loadSanggunianPanlungsod();
+                        loadSanggunianBarangay();
+                        loadSanggunianKabataan();
                     },
                     error: function (xhr) {
                         console.error("❌ Error retrieving positions:", xhr.responseText);
@@ -670,6 +628,194 @@
                 $("#senators-count").text(selectedSenators.length);
             }
 
+            function loadSanggunianPanlalawigan() {
+                $.ajax({
+                    url: '/User/GetCandidatesByPosition',
+                    type: 'GET',
+                    data: { positionName: "Sangguniang Panlalawigan Members" },
+                    success: function (response) {
+                        if (response.success && response.data.length > 0) {
+                            let sanggunianPanlalawiganContainer = $("#sanggunianPanlalawigan-container");
+                            sanggunianPanlalawiganContainer.empty();
+
+                            response.data.forEach(candidate => {
+                                let checkbox = `<div>
+                                    <input type="checkbox" class="sanggunianPanlalawigan-checkbox" value="${candidate.candidateId}" data-positionid="${candidate.positionId}">
+                                    <label>${candidate.fullName}</label>
+                                </div>`;
+                                sanggunianPanlalawiganContainer.append(checkbox);
+                            });
+
+                            $(".sanggunianPanlalawigan-checkbox").change(function () {
+                                updateSanggunianPanlalawiganSelection($(this));
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error("❌ Error retrieving senator candidates:", xhr.responseText);
+                    }
+                });
+            }
+
+            function updateSanggunianPanlalawiganSelection(checkbox) {
+                let candidateId = checkbox.val();
+                let positionId = checkbox.attr("data-positionid");
+
+                if (checkbox.is(":checked")) {
+                    if (selectedSanggunianPanlalawigan.length < 5) {
+                        selectedSanggunianPanlalawigan.push({ CandidateId: parseInt(candidateId), PositionId: parseInt(positionId) });
+                    } else {
+                        checkbox.prop("checked", false);
+                        alert("⚠️ You can only select up to 5 sanggunian panlalawigan.");
+                    }
+                } else {
+                    selectedSanggunianPanlalawigan = selectedSanggunianPanlalawigan.filter(sanggunianPanlalawigan => sanggunianPanlalawigan.CandidateId !== parseInt(candidateId));
+                }
+
+                $("#sanggunianPanlalawigan-count").text(selectedSanggunianPanlalawigan.length);
+            }
+
+            function loadSanggunianPanlungsod() {
+                $.ajax({
+                    url: '/User/GetCandidatesByPosition',
+                    type: 'GET',
+                    data: { positionName: "Sangguniang Panlungsod/Bayan Members" },
+                    success: function (response) {
+                        if (response.success && response.data.length > 0) {
+                            let sanggunianPanlungsodContainer = $("#sanggunianPanlungsod-container");
+                            sanggunianPanlungsodContainer.empty();
+
+                            response.data.forEach(candidate => {
+                                let checkbox = `<div>
+                                    <input type="checkbox" class="sanggunianPanlungsod-checkbox" value="${candidate.candidateId}" data-positionid="${candidate.positionId}">
+                                    <label>${candidate.fullName}</label>
+                                </div>`;
+                                sanggunianPanlungsodContainer.append(checkbox);
+                            });
+
+                            $(".sanggunianPanlungsod-checkbox").change(function () {
+                                updateSanggunianPanlungsodSelection($(this));
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error("❌ Error retrieving senator candidates:", xhr.responseText);
+                    }
+                });
+            }
+
+            function updateSanggunianPanlungsodSelection(checkbox) {
+                let candidateId = checkbox.val();
+                let positionId = checkbox.attr("data-positionid");
+
+                if (checkbox.is(":checked")) {
+                    if (selectedSanggunianPanlungsod.length < 10) {
+                        selectedSanggunianPanlungsod.push({ CandidateId: parseInt(candidateId), PositionId: parseInt(positionId) });
+                    } else {
+                        checkbox.prop("checked", false);
+                        alert("⚠️ You can only select up to 10 sanggunian panlungsod.");
+                    }
+                } else {
+                    selectedSanggunianPanlungsod = selectedSanggunianPanlungsod.filter(sanggunianPanlungsod => sanggunianPanlungsod.CandidateId !== parseInt(candidateId));
+                }
+
+                $("#sanggunianPanlungsod-count").text(selectedSanggunianPanlungsod.length);
+            }
+
+            function loadSanggunianBarangay() {
+                $.ajax({
+                    url: '/User/GetCandidatesByPosition',
+                    type: 'GET',
+                    data: { positionName: "Sangguniang Barangay Members" },
+                    success: function (response) {
+                        if (response.success && response.data.length > 0) {
+                            let sanggunianBarangayContainer = $("#sanggunianBarangay-container");
+                            sanggunianBarangayContainer.empty();
+
+                            response.data.forEach(candidate => {
+                                let checkbox = `<div>
+                                    <input type="checkbox" class="sanggunianBarangay-checkbox" value="${candidate.candidateId}" data-positionid="${candidate.positionId}">
+                                    <label>${candidate.fullName}</label>
+                                </div>`;
+                                sanggunianBarangayContainer.append(checkbox);
+                            });
+
+                            $(".sanggunianBarangay-checkbox").change(function () {
+                                updateSanggunianBarangaySelection($(this));
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error("❌ Error retrieving sanggunian barangay candidates:", xhr.responseText);
+                    }
+                });
+            }
+
+            function updateSanggunianBarangaySelection(checkbox) {
+                let candidateId = checkbox.val();
+                let positionId = checkbox.attr("data-positionid");
+
+                if (checkbox.is(":checked")) {
+                    if (selectedSanggunianBarangay.length < 7) {
+                        selectedSanggunianBarangay.push({ CandidateId: parseInt(candidateId), PositionId: parseInt(positionId) });
+                    } else {
+                        checkbox.prop("checked", false);
+                        alert("⚠️ You can only select up to 7 sanggunian barangay.");
+                    }
+                } else {
+                    selectedSanggunianBarangay = selectedSanggunianBarangay.filter(sanggunianBarangay => sanggunianBarangay.CandidateId !== parseInt(candidateId));
+                }
+
+                $("#sanggunianBarangay-count").text(selectedSanggunianBarangay.length);
+            }
+
+              function loadSanggunianKabataan() {
+                $.ajax({
+                    url: '/User/GetCandidatesByPosition',
+                    type: 'GET',
+                    data: { positionName: "Sangguniang Kabataan (SK) Members" },
+                    success: function (response) {
+                        if (response.success && response.data.length > 0) {
+                            let sanggunianKabataanContainer = $("#sanggunianKabataan-container");
+                            sanggunianKabataanContainer.empty();
+
+                            response.data.forEach(candidate => {
+                                let checkbox = `<div>
+                                    <input type="checkbox" class="sanggunianKabataan-checkbox" value="${candidate.candidateId}" data-positionid="${candidate.positionId}">
+                                    <label>${candidate.fullName}</label>
+                                </div>`;
+                                sanggunianKabataanContainer.append(checkbox);
+                            });
+
+                            $(".sanggunianKabataan-checkbox").change(function () {
+                                updateSanggunianKabataanSelection($(this));
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error("❌ Error retrieving sanggunian kabataan candidates:", xhr.responseText);
+                    }
+                });
+            }
+
+            function updateSanggunianKabataanSelection(checkbox) {
+                let candidateId = checkbox.val();
+                let positionId = checkbox.attr("data-positionid");
+
+                if (checkbox.is(":checked")) {
+                    if (selectedSanggunianKabataan.length < 7) {
+                        selectedSanggunianKabataan.push({ CandidateId: parseInt(candidateId), PositionId: parseInt(positionId) });
+                    } else {
+                        checkbox.prop("checked", false);
+                        alert("⚠️ You can only select up to 7 sanggunian kabataan.");
+                    }
+                } else {
+                    selectedSanggunianKabataan = selectedSanggunianKabataan.filter(sanggunianKabataan => sanggunianKabataan.CandidateId !== parseInt(candidateId));
+                }
+
+                $("#sanggunianKabataan-count").text(selectedSanggunianKabataan.length);
+            }
+
             $("#submitVote").click(function (e) {
                 e.preventDefault();
 
@@ -712,7 +858,50 @@
                         });
                     });
                 }
-
+                 if (selectedSanggunianPanlalawigan.length > 0) {
+                    hasSelection = true;
+                        selectedSanggunianPanlalawigan.forEach(sanggunianPanlalawigan => {
+                        votes.push({
+                            VoterId: voterId,
+                            ElectionId: electionId,
+                            PositionId: sanggunianPanlalawigan.PositionId,
+                            CandidateId: sanggunianPanlalawigan.CandidateId
+                        });
+                    });
+                }
+                 if (selectedSanggunianPanlungsod.length > 0) {
+                    hasSelection = true;
+                        selectedSanggunianPanlungsod.forEach(sanggunianPanlungsod => {
+                        votes.push({
+                            VoterId: voterId,
+                            ElectionId: electionId,
+                            PositionId: sanggunianPanlungsod.PositionId,
+                            CandidateId: sanggunianPanlungsod.CandidateId
+                        });
+                    });
+                }
+                if (selectedSanggunianBarangay.length > 0) {
+                    hasSelection = true;
+                        selectedSanggunianBarangay.forEach(sanggunianBarangay => {
+                        votes.push({
+                            VoterId: voterId,
+                            ElectionId: electionId,
+                            PositionId: sanggunianBarangay.PositionId,
+                            CandidateId: sanggunianBarangay.CandidateId
+                        });
+                    });
+                }
+                if (selectedSanggunianKabataan.length > 0) {
+                    hasSelection = true;
+                        selectedSanggunianKabataan.forEach(sanggunianKabataan => {
+                        votes.push({
+                            VoterId: voterId,
+                            ElectionId: electionId,
+                            PositionId: sanggunianKabataan.PositionId,
+                            CandidateId: sanggunianKabataan.CandidateId
+                        });
+                    });
+                }
                 if (!hasSelection) {
                     alert("⚠️ Please select at least one candidate.");
                     return;

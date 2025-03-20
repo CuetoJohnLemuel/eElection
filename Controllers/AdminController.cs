@@ -9,6 +9,7 @@ using eElection.Data;
 using eElection.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.Json;
 
 namespace eElection.Controllers
 {
@@ -251,34 +252,67 @@ namespace eElection.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddElectionTypePosition([FromBody] ElectionTypePositions model)
+        public async Task<IActionResult> AddElectionTypePosition([FromBody] JsonElement requestData)
         {
-            if (!ModelState.IsValid)
-            {
-                // Log validation errors
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                Console.WriteLine("Validation Errors: " + string.Join(", ", errors));
-                return Json(new { success = false, message = "Invalid data.", errors = errors });
-            }
-
             try
             {
-                // Log the received data
-                Console.WriteLine("Received ElectionTypePosition: ElectionTypeId=" + model.ElectionTypeId + ", PositionId=" + model.PositionId);
+                // Parse ElectionTypeId safely
+                if (!requestData.TryGetProperty("ElectionTypeId", out var electionTypeIdElement) ||
+                    !electionTypeIdElement.TryGetInt32(out int electionTypeId))
+                {
+                    return Json(new { success = false, message = "Invalid ElectionTypeId." });
+                }
 
-                // Save to database
-                _context.ElectionTypePositions.Add(model);
+                // Parse PositionIds safely
+                if (!requestData.TryGetProperty("PositionIds", out var positionIdsElement) ||
+                    positionIdsElement.ValueKind != JsonValueKind.Array)
+                {
+                    return Json(new { success = false, message = "Invalid PositionIds format. Expected an array." });
+                }
+
+                var positionIds = positionIdsElement.EnumerateArray()
+                                  .Select(p => p.GetInt32())  // Extract int values from JSON array
+                                  .ToList();
+
+                if (electionTypeId <= 0 || !positionIds.Any())
+                {
+                    return Json(new { success = false, message = "Invalid request data. ElectionTypeId and at least one PositionId must be provided." });
+                }
+
+                Console.WriteLine($"📌 Received: ElectionTypeId={electionTypeId}, Positions={string.Join(",", positionIds)}");
+
+                // Check if the provided Position IDs exist in the database
+                var existingPositions = _context.Positions
+                    .Where(p => positionIds.Contains(p.PositionId))
+                    .Select(p => p.PositionId)
+                    .ToList();
+
+                if (existingPositions.Count != positionIds.Count)
+                {
+                    return Json(new { success = false, message = "Some Position IDs are invalid or do not exist." });
+                }
+
+                var newPositions = positionIds.Select(positionId => new ElectionTypePositions
+                {
+                    ElectionTypeId = electionTypeId,
+                    PositionId = positionId
+                }).ToList();
+
+                _context.ElectionTypePositions.AddRange(newPositions);
                 await _context.SaveChangesAsync();
 
-                return Json(new { success = true, message = "Position added to Election Type successfully!" });
+                Console.WriteLine("✅ Insert successful!");
+                return Json(new { success = true, message = "Positions added successfully!" });
             }
             catch (Exception ex)
             {
-                // Log the exception
-                Console.WriteLine("Error: " + ex.Message);
-                return Json(new { success = false, message = "An error occurred: " + ex.Message });
+                Console.WriteLine("❌ Database Insert Error: " + ex.Message);
+                Console.WriteLine("❌ Stack Trace: " + ex.StackTrace);
+
+                return Json(new { success = false, message = "Error inserting into database.", error = ex.Message });
             }
         }
+
 
         // POST: Admin/DeleteElectionTypePosition
         [HttpPost]

@@ -235,8 +235,12 @@
                                                 <label class="form-check-label" for="cityMunicipality">City/Municipality Elections</label>
                                             </div>
                                             <div class="form-check mb-2">
-                                                <input class="form-check-input" type="checkbox" id="barangay" name="ElectionType" value="Barangay and SK Elections">
-                                                <label class="form-check-label" for="barangay">Barangay and Sangguniang Kabataan (SK) Elections</label>
+                                                <input class="form-check-input" type="checkbox" id="barangay" name="ElectionType" value="Barangay Elections">
+                                                <label class="form-check-label" for="barangay">Barangay Elections</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="sk" name="ElectionType" value="SK Elections">
+                                                <label class="form-check-label" for="sk">Sangguniang Kabataan (SK) Elections</label>
                                             </div>
                                         </div>
                                     </div>
@@ -303,8 +307,12 @@
                                 <label class="form-check-label" for="editCityMunicipality">City/Municipality Elections</label>
                             </div>
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" id="editBarangay" name="ElectionType" value="Barangay and SK Elections">
-                                <label class="form-check-label" for="editBarangay">Barangay and Sangguniang Kabataan (SK) Elections</label>
+                                <input class="form-check-input" type="checkbox" id="editBarangay" name="ElectionType" value="Barangay Elections">
+                                <label class="form-check-label" for="editBarangay">Barangay Elections</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="editSK" name="ElectionType" value="SK Elections">
+                                <label class="form-check-label" for="editSK">Sangguniang Kabataan (SK) Elections</label>
                             </div>
                         </div>
                     </div>
@@ -465,8 +473,8 @@
                 EndDate: document.getElementById("editEndDate").value,
                 Status: document.getElementById("editStatus").value,
                 ElectionTypes: Array.from(document.querySelectorAll("#editElectionForm input[type='checkbox']:checked"))
-                    .map(checkbox => checkbox.value)
-                    .join(",") // Convert selected checkboxes to a comma-separated string
+                .map(checkbox => checkbox.value)
+                .join(",") // Convert selected checkboxes to a comma-separated string
             };
         // Submit data via AJAX
             fetch("/Admin/EditElection", {

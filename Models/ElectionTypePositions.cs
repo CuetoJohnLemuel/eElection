@@ -6,7 +6,7 @@ namespace eElection.Models
     public class ElectionTypePositions
     {
         [Key]
-        public int Id { get; set; }
+        public int ElectionTypePositionId { get; set; }
 
         [Required]
         public int ElectionTypeId { get; set; }
