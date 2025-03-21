@@ -24,18 +24,32 @@ namespace eElection.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Configure ElectionTypePositions Foreign Key Relationship
             modelBuilder.Entity<ElectionTypePositions>()
-            .HasKey(etp => new { etp.ElectionTypeId, etp.PositionId });
+                .HasOne(e => e.Position)  // ElectionTypePositions has one Position
+                .WithMany(p => p.ElectionTypePositions)  // Position has many ElectionTypePositions
+                .HasForeignKey(e => e.PositionId)  // Foreign key in ElectionTypePositions
+                .OnDelete(DeleteBehavior.Cascade);  // Cascade delete if a Position is deleted
 
-            modelBuilder.Entity<ElectionTypePositions>()
-               .HasOne(etp => etp.ElectionType)
-               .WithMany(et => et.ElectionTypePositions)
-               .HasForeignKey(etp => etp.ElectionTypeId);
+            // Configure Position
+            modelBuilder.Entity<Position>()
+                .HasMany(p => p.ElectionTypePositions)
+                .WithOne(e => e.Position)
+                .HasForeignKey(e => e.PositionId)
+                .OnDelete(DeleteBehavior.Cascade);  // Cascade delete for consistency
 
-            modelBuilder.Entity<ElectionTypePositions>()
-                .HasOne(etp => etp.Position)
-                .WithMany(p => p.ElectionTypePositions)
-                .HasForeignKey(etp => etp.PositionId);
+            //modelBuilder.Entity<ElectionTypePositions>()
+            //.HasKey(etp => new { etp.ElectionTypeId, etp.PositionId });
+
+            //modelBuilder.Entity<ElectionTypePositions>()
+            //   .HasOne(etp => etp.ElectionType)
+            //   .WithMany(et => et.ElectionTypePositions)
+            //   .HasForeignKey(etp => etp.ElectionTypeId);
+
+            //modelBuilder.Entity<ElectionTypePositions>()
+            //    .HasOne(etp => etp.Position)
+            //    .WithMany(p => p.ElectionTypePositions)
+            //    .HasForeignKey(etp => etp.PositionId);
 
             modelBuilder.Entity<Candidate>()
             .HasOne(c => c.Election)
@@ -325,7 +339,7 @@ namespace eElection.Data
                  new Position { PositionId = 10, PositionName = "Party-List Representatives", CreatedAt = DateTime.Parse("2025-03-15 02:38:39") },
                  new Position { PositionId = 11, PositionName = "Regional Governor", CreatedAt = DateTime.Parse("2025-03-15 02:38:39") },
                  new Position { PositionId = 12, PositionName = "Regional Vice Governor", CreatedAt = DateTime.Parse("2025-03-15 02:38:39") },
-                 new Position { PositionId = 13, PositionName = "Regional Assembly Members", CreatedAt = DateTime.Parse("2025-03-15 02:38:39") },
+                 //new Position { PositionId = 13, PositionName = "Regional Assembly Members", CreatedAt = DateTime.Parse("2025-03-15 02:38:39") },
                  new Position { PositionId = 14, PositionName = "Governor", CreatedAt = DateTime.Parse("2025-03-15 02:38:39") },
                  new Position { PositionId = 15, PositionName = "Vice Governor", CreatedAt = DateTime.Parse("2025-03-15 02:38:39") },
                  new Position { PositionId = 16, PositionName = "Sangguniang Panlalawigan Members", CreatedAt = DateTime.Parse("2025-03-15 02:38:39") },
@@ -335,9 +349,9 @@ namespace eElection.Data
                  new Position { PositionId = 20, PositionName = "Barangay Captain (Punong Barangay)", CreatedAt = DateTime.Parse("2025-03-15 02:38:39") },
                  new Position { PositionId = 21, PositionName = "Sangguniang Barangay Members", CreatedAt = DateTime.Parse("2025-03-15 02:38:39") },
                  new Position { PositionId = 22, PositionName = "Sangguniang Kabataan (SK) Chairman", CreatedAt = DateTime.Parse("2025-03-15 02:38:39") },
-                 new Position { PositionId = 23, PositionName = "Sangguniang Kabataan (SK) Members", CreatedAt = DateTime.Parse("2025-03-15 02:38:39") },
-                 new Position { PositionId = 24, PositionName = "Councilors for Indigenous Peoples (IPs)", CreatedAt = DateTime.Parse("2025-03-15 02:38:39") },
-                 new Position { PositionId = 25, PositionName = "Councilors for Sectoral Representatives", CreatedAt = DateTime.Parse("2025-03-15 02:38:39") }
+                 new Position { PositionId = 23, PositionName = "Sangguniang Kabataan (SK) Members", CreatedAt = DateTime.Parse("2025-03-15 02:38:39") }
+                 //new Position { PositionId = 24, PositionName = "Councilors for Indigenous Peoples (IPs)", CreatedAt = DateTime.Parse("2025-03-15 02:38:39") },
+                 //new Position { PositionId = 25, PositionName = "Councilors for Sectoral Representatives", CreatedAt = DateTime.Parse("2025-03-15 02:38:39") }
              );
 
             modelBuilder.Entity<Voter>().HasData(

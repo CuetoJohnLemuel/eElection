@@ -1,4 +1,4 @@
-﻿@model List<ElectionTypePositions>
+﻿@model List<ElectionTypePositionsViewModel>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -145,14 +145,17 @@
                                                 @foreach (var electionTypePosition in Model)
                                                 {
                                                     <tr>
-                                                        <td>@electionTypePosition.ElectionType.ElectionTypeName</td>
-                                                        <td>@electionTypePosition.Position.PositionName</td>
+                                                        <td>@electionTypePosition.ElectionTypeName</td>
+                                                        <td>@electionTypePosition.Positions</td> <!-- Combined Positions -->
                                                         <td>
-                                                            <button class="btn btn-danger btn-sm delete-btn" data-id="@electionTypePosition.ElectionTypePositionId">Delete</button>
+                                                            <button class="btn btn-danger btn-sm delete-btn" data-id="@electionTypePosition.ElectionTypeId">Delete</button>
                                                         </td>
                                                     </tr>
                                                 }
                                             </tbody>
+
+
+
                                         </table>
                                     </div>
                                 </div>
@@ -160,8 +163,6 @@
                         </div>
                     </div>
                 </div>
-
-
                 <!-- Modal for Adding Election Type Position -->
                 <div class="modal fade" id="addElectionTypePositionModal" tabindex="-1" aria-labelledby="addElectionTypePositionModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -173,14 +174,8 @@
                             <div class="modal-body">
                                 <form id="addElectionTypePositionForm">
                                     <div class="mb-3">
-                                        <label for="electionTypeId" class="form-label">Election Type</label>
-                                        <select class="form-control" id="electionTypeId" name="ElectionTypeId" required>
-                                            <option value="">Select Election Type</option>
-                                            @foreach (var electionType in ViewBag.ElectionTypes)
-                                            {
-                                                <option value="@electionType.ElectionTypeId">@electionType.ElectionTypeName</option>
-                                            }
-                                        </select>
+                                        <label for="electionTypeName" class="form-label">Election Type</label>
+                                        <input type="text" class="form-control" id="electionTypeName" name="ElectionTypeName" required placeholder="Enter Election Type">
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Positions</label>
@@ -196,13 +191,15 @@
                                             }
                                         </div>
                                     </div>
-
+                                    <span id="errorMessage" class="text-danger"></span>
                                     <button type="submit" class="btn btn-success">Add Positions</button>
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
+
+
 
 
           
@@ -220,15 +217,20 @@
         <!-- page-body-wrapper ends -->
     </div>
     <script>
-                document.getElementById("addElectionTypePositionForm").addEventListener("submit", function (event) {
+             document.getElementById("addElectionTypePositionForm").addEventListener("submit", async function (event) {
             event.preventDefault();
 
-            let electionTypeId = Number(document.getElementById("electionTypeId").value);
+            let electionTypeName = document.getElementById("electionTypeName").value.trim();
             let selectedPositions = [];
 
             document.querySelectorAll(".positionCheckbox:checked").forEach((checkbox) => {
                 selectedPositions.push(Number(checkbox.value));
             });
+
+            if (!electionTypeName) {
+                alert("Please enter an Election Type.");
+                return;
+            }
 
             if (selectedPositions.length === 0) {
                 alert("Please select at least one position.");
@@ -236,9 +238,18 @@
             }
 
             let formData = {
-                ElectionTypeId: electionTypeId,
+                ElectionTypeName: electionTypeName,
                 PositionIds: selectedPositions
             };
+
+            // ✅ Check if the election type already exists before submitting
+            let checkResponse = await fetch(`/Admin/CheckElectionTypeExists?name=${encodeURIComponent(electionTypeName)}`);
+            let checkResult = await checkResponse.json();
+
+            if (checkResult.exists) {
+                document.getElementById("errorMessage").innerText = "This Election Type already exists.";
+                return;
+            }
 
             console.log("Sending Data:", formData);
 
@@ -261,7 +272,6 @@
             })
             .catch(error => console.error("Fetch Error:", error));
         });
-
 
     </script>
 

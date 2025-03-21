@@ -12,6 +12,6 @@ namespace eElection.Models
         [StringLength(100)]
         public string ElectionTypeName { get; set; }
 
-        public virtual ICollection<ElectionTypePositions> ElectionTypePositions { get; set; } = new List<ElectionTypePositions>();
+        //public virtual ICollection<ElectionTypePositions> ElectionTypePositions { get; set; } = new List<ElectionTypePositions>();
     }
 }

@@ -50,30 +50,109 @@ namespace eElection.Controllers
 
 
 
+        //[Authorize(Roles = "Voter")]
+        //public IActionResult Ballot(int? electionId)
+        //{
+        //    if (electionId == null)
+        //    {
+        //        return RedirectToAction("Index"); // Redirect to another page if electionId is missing
+        //    }
+
+        //    var election = _context.Elections
+        //        .Where(e => e.ElectionId == electionId)
+        //        .Select(e => new { e.ElectionId, e.ElectionTypes })
+        //        .FirstOrDefault();
+
+        //    if (election == null)
+        //    {
+        //        return NotFound("Election not found.");
+        //    }
+
+        //    // Store election data in ViewBag
+        //    ViewBag.ElectionId = election.ElectionId;
+        //    ViewBag.ElectionTypes = election.ElectionTypes ?? ""; // Ensure it's not null
+
+        //    return View();
+        //}
+
         [Authorize(Roles = "Voter")]
         public IActionResult Ballot(int? electionId)
         {
             if (electionId == null)
             {
-                return RedirectToAction("Index"); // Redirect to another page if electionId is missing
+                return RedirectToAction("Index"); // Redirect if electionId is missing
             }
 
-            var election = _context.Elections
+            // First, retrieve the election data in memory
+            var electionData = _context.Elections
                 .Where(e => e.ElectionId == electionId)
-                .Select(e => new { e.ElectionId, e.ElectionTypes })
+                .Select(e => new
+                {
+                    e.ElectionId,
+                    e.ElectionTypes
+                })
                 .FirstOrDefault();
 
-            if (election == null)
+            if (electionData == null)
             {
                 return NotFound("Election not found.");
             }
 
-            // Store election data in ViewBag
-            ViewBag.ElectionId = election.ElectionId;
-            ViewBag.ElectionTypes = election.ElectionTypes ?? ""; // Ensure it's not null
+            // Split the election types in memory
+            var electionTypeNames = electionData.ElectionTypes.Split(',')
+                .Select(et => et.Trim()) // Trim spaces
+                .ToList();
+
+            // Query positions based on multiple election types
+            var positions = _context.ElectionTypePositions
+                .Where(etp => electionTypeNames.Contains(etp.ElectionTypeName))
+                .Join(_context.Positions,
+                      etp => etp.PositionId,
+                      p => p.PositionId,
+                      (etp, p) => p.PositionName)
+                .ToList();
+
+            // Pass data to the View
+            ViewBag.ElectionId = electionData.ElectionId;
+            ViewBag.ElectionTypes = electionData.ElectionTypes ?? "";
+            ViewBag.Positions = positions;
 
             return View();
         }
+
+
+        [HttpGet]
+        public JsonResult GetCandidates(string positionName)
+        {
+            // Retrieve the PositionId based on the provided PositionName
+            var positionId = _context.Positions
+                .Where(p => p.PositionName == positionName)
+                .Select(p => p.PositionId)
+                .FirstOrDefault();
+
+            // If PositionId is not found, return an empty list
+            if (positionId == 0)
+            {
+                return Json(new List<object>());
+            }
+
+            // Retrieve candidates and join with Voters table to get full names
+            var candidates = _context.Candidates
+                .Where(c => c.PositionId == positionId)
+                .Join(_context.Voters,
+                    candidate => candidate.VoterId,  // Foreign key in Candidates
+                    voter => voter.VoterId,          // Primary key in Voters
+                    (candidate, voter) => new
+                    {
+                        CandidateId = candidate.CandidateId,
+                        FullName = voter.FirstName + " " + voter.LastName // Concatenate First and Last Name
+                    })
+                .ToList();
+
+            return Json(candidates);
+        }
+
+
 
         [HttpGet]
         public IActionResult GetCandidatesByPosition(string positionName)

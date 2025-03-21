@@ -5,24 +5,18 @@
 namespace eElection.Migrations
 {
     /// <inheritdoc />
-    public partial class updatingcolumninparty : Migration
+    public partial class AddForeignKeyPositionETP : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "PartyID",
-                table: "Parties",
-                newName: "PartyId");
+
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "PartyId",
-                table: "Parties",
-                newName: "PartyID");
+
         }
     }
 }

@@ -8,11 +8,234 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace eElection.Migrations
 {
     /// <inheritdoc />
-    public partial class AddDataSeed : Migration
+    public partial class UpdatingAll : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Announcements",
+                columns: table => new
+                {
+                    AnnouncementId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Announcements", x => x.AnnouncementId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Elections",
+                columns: table => new
+                {
+                    ElectionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ElectionName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ElectionTypes = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Elections", x => x.ElectionId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ElectionTypes",
+                columns: table => new
+                {
+                    ElectionTypeId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ElectionTypeName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ElectionTypes", x => x.ElectionTypeId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Parties",
+                columns: table => new
+                {
+                    PartyId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PartyName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Leader = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    FoundedYear = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Parties", x => x.PartyId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Positions",
+                columns: table => new
+                {
+                    PositionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PositionName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Positions", x => x.PositionId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Voters",
+                columns: table => new
+                {
+                    VoterId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Birthdate = table.Column<DateOnly>(type: "date", nullable: false),
+                    Gender = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    ProfilePhoto = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RejectionReason = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Voters", x => x.VoterId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Votes",
+                columns: table => new
+                {
+                    VoteId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ElectionId = table.Column<int>(type: "int", nullable: false),
+                    PositionId = table.Column<int>(type: "int", nullable: false),
+                    CandidateId = table.Column<int>(type: "int", nullable: false),
+                    VoterId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Votes", x => x.VoteId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ElectionTypePositions",
+                columns: table => new
+                {
+                    ElectionTypePositionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ElectionTypeName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PositionId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ElectionTypePositions", x => x.ElectionTypePositionId);
+                    table.ForeignKey(
+                        name: "FK_ElectionTypePositions_Positions_PositionId",
+                        column: x => x.PositionId,
+                        principalTable: "Positions",
+                        principalColumn: "PositionId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Account",
+                columns: table => new
+                {
+                    AccountId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Username = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmailConfirmationToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsEmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    VoterId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Account", x => x.AccountId);
+                    table.ForeignKey(
+                        name: "FK_Account_Voters_VoterId",
+                        column: x => x.VoterId,
+                        principalTable: "Voters",
+                        principalColumn: "VoterId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Candidates",
+                columns: table => new
+                {
+                    CandidateId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ElectionId = table.Column<int>(type: "int", nullable: false),
+                    VoterId = table.Column<int>(type: "int", nullable: false),
+                    PartyId = table.Column<int>(type: "int", nullable: false),
+                    PositionId = table.Column<int>(type: "int", nullable: false),
+                    Biography = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Candidates", x => x.CandidateId);
+                    table.ForeignKey(
+                        name: "FK_Candidates_Elections_ElectionId",
+                        column: x => x.ElectionId,
+                        principalTable: "Elections",
+                        principalColumn: "ElectionId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Candidates_Parties_PartyId",
+                        column: x => x.PartyId,
+                        principalTable: "Parties",
+                        principalColumn: "PartyId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Candidates_Positions_PositionId",
+                        column: x => x.PositionId,
+                        principalTable: "Positions",
+                        principalColumn: "PositionId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Candidates_Voters_VoterId",
+                        column: x => x.VoterId,
+                        principalTable: "Voters",
+                        principalColumn: "VoterId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VoteDetails",
+                columns: table => new
+                {
+                    VoteDetailId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    VoteId = table.Column<int>(type: "int", nullable: false),
+                    CandidateId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VoteDetails", x => x.VoteDetailId);
+                    table.ForeignKey(
+                        name: "FK_VoteDetails_Votes_VoteId",
+                        column: x => x.VoteId,
+                        principalTable: "Votes",
+                        principalColumn: "VoteId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "Announcements",
                 columns: new[] { "AnnouncementId", "CreatedAt", "Description", "Status", "Title" },
@@ -118,295 +341,80 @@ namespace eElection.Migrations
                     { 12, "q", new DateTime(2025, 3, 15, 3, 0, 59, 0, DateTimeKind.Unspecified), 10, 5, 9, 24 },
                     { 13, "w", new DateTime(2025, 3, 15, 3, 1, 20, 0, DateTimeKind.Unspecified), 10, 5, 10, 25 }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Account_VoterId",
+                table: "Account",
+                column: "VoterId",
+                unique: true,
+                filter: "[VoterId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Candidates_ElectionId",
+                table: "Candidates",
+                column: "ElectionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Candidates_PartyId",
+                table: "Candidates",
+                column: "PartyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Candidates_PositionId",
+                table: "Candidates",
+                column: "PositionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Candidates_VoterId",
+                table: "Candidates",
+                column: "VoterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ElectionTypePositions_PositionId",
+                table: "ElectionTypePositions",
+                column: "PositionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VoteDetails_VoteId",
+                table: "VoteDetails",
+                column: "VoteId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData(
-                table: "Account",
-                keyColumn: "AccountId",
-                keyValue: 5);
+            migrationBuilder.DropTable(
+                name: "Account");
 
-            migrationBuilder.DeleteData(
-                table: "Account",
-                keyColumn: "AccountId",
-                keyValue: 7);
+            migrationBuilder.DropTable(
+                name: "Announcements");
 
-            migrationBuilder.DeleteData(
-                table: "Account",
-                keyColumn: "AccountId",
-                keyValue: 9);
+            migrationBuilder.DropTable(
+                name: "Candidates");
 
-            migrationBuilder.DeleteData(
-                table: "Account",
-                keyColumn: "AccountId",
-                keyValue: 10);
+            migrationBuilder.DropTable(
+                name: "ElectionTypePositions");
 
-            migrationBuilder.DeleteData(
-                table: "Account",
-                keyColumn: "AccountId",
-                keyValue: 11);
+            migrationBuilder.DropTable(
+                name: "ElectionTypes");
 
-            migrationBuilder.DeleteData(
-                table: "Account",
-                keyColumn: "AccountId",
-                keyValue: 12);
+            migrationBuilder.DropTable(
+                name: "VoteDetails");
 
-            migrationBuilder.DeleteData(
-                table: "Announcements",
-                keyColumn: "AnnouncementId",
-                keyValue: 2);
+            migrationBuilder.DropTable(
+                name: "Elections");
 
-            migrationBuilder.DeleteData(
-                table: "Announcements",
-                keyColumn: "AnnouncementId",
-                keyValue: 3);
+            migrationBuilder.DropTable(
+                name: "Parties");
 
-            migrationBuilder.DeleteData(
-                table: "Announcements",
-                keyColumn: "AnnouncementId",
-                keyValue: 4);
+            migrationBuilder.DropTable(
+                name: "Voters");
 
-            migrationBuilder.DeleteData(
-                table: "Candidates",
-                keyColumn: "CandidateId",
-                keyValue: 9);
+            migrationBuilder.DropTable(
+                name: "Positions");
 
-            migrationBuilder.DeleteData(
-                table: "Candidates",
-                keyColumn: "CandidateId",
-                keyValue: 10);
-
-            migrationBuilder.DeleteData(
-                table: "Candidates",
-                keyColumn: "CandidateId",
-                keyValue: 11);
-
-            migrationBuilder.DeleteData(
-                table: "Candidates",
-                keyColumn: "CandidateId",
-                keyValue: 12);
-
-            migrationBuilder.DeleteData(
-                table: "Candidates",
-                keyColumn: "CandidateId",
-                keyValue: 13);
-
-            migrationBuilder.DeleteData(
-                table: "Elections",
-                keyColumn: "ElectionId",
-                keyValue: 11);
-
-            migrationBuilder.DeleteData(
-                table: "Elections",
-                keyColumn: "ElectionId",
-                keyValue: 13);
-
-            migrationBuilder.DeleteData(
-                table: "Parties",
-                keyColumn: "PartyId",
-                keyValue: 1);
-
-            migrationBuilder.DeleteData(
-                table: "Parties",
-                keyColumn: "PartyId",
-                keyValue: 4);
-
-            migrationBuilder.DeleteData(
-                table: "Parties",
-                keyColumn: "PartyId",
-                keyValue: 7);
-
-            migrationBuilder.DeleteData(
-                table: "Parties",
-                keyColumn: "PartyId",
-                keyValue: 8);
-
-            migrationBuilder.DeleteData(
-                table: "Parties",
-                keyColumn: "PartyId",
-                keyValue: 9);
-
-            migrationBuilder.DeleteData(
-                table: "Parties",
-                keyColumn: "PartyId",
-                keyValue: 10);
-
-            migrationBuilder.DeleteData(
-                table: "Parties",
-                keyColumn: "PartyId",
-                keyValue: 11);
-
-            migrationBuilder.DeleteData(
-                table: "Parties",
-                keyColumn: "PartyId",
-                keyValue: 12);
-
-            migrationBuilder.DeleteData(
-                table: "Parties",
-                keyColumn: "PartyId",
-                keyValue: 14);
-
-            migrationBuilder.DeleteData(
-                table: "Parties",
-                keyColumn: "PartyId",
-                keyValue: 15);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 11);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 12);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 13);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 14);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 15);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 16);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 17);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 18);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 19);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 20);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 21);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 22);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 23);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 24);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 25);
-
-            migrationBuilder.DeleteData(
-                table: "Elections",
-                keyColumn: "ElectionId",
-                keyValue: 10);
-
-            migrationBuilder.DeleteData(
-                table: "Parties",
-                keyColumn: "PartyId",
-                keyValue: 2);
-
-            migrationBuilder.DeleteData(
-                table: "Parties",
-                keyColumn: "PartyId",
-                keyValue: 5);
-
-            migrationBuilder.DeleteData(
-                table: "Parties",
-                keyColumn: "PartyId",
-                keyValue: 6);
-
-            migrationBuilder.DeleteData(
-                table: "Parties",
-                keyColumn: "PartyId",
-                keyValue: 13);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 6);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 7);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 8);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 9);
-
-            migrationBuilder.DeleteData(
-                table: "Positions",
-                keyColumn: "PositionId",
-                keyValue: 10);
-
-            migrationBuilder.DeleteData(
-                table: "Voters",
-                keyColumn: "VoterId",
-                keyValue: 4);
-
-            migrationBuilder.DeleteData(
-                table: "Voters",
-                keyColumn: "VoterId",
-                keyValue: 6);
-
-            migrationBuilder.DeleteData(
-                table: "Voters",
-                keyColumn: "VoterId",
-                keyValue: 22);
-
-            migrationBuilder.DeleteData(
-                table: "Voters",
-                keyColumn: "VoterId",
-                keyValue: 23);
-
-            migrationBuilder.DeleteData(
-                table: "Voters",
-                keyColumn: "VoterId",
-                keyValue: 24);
-
-            migrationBuilder.DeleteData(
-                table: "Voters",
-                keyColumn: "VoterId",
-                keyValue: 25);
+            migrationBuilder.DropTable(
+                name: "Votes");
         }
     }
 }

@@ -210,49 +210,29 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Election Type</label>
-                                        <!-- Add a container for the checkboxes with custom styling -->
                                         <div class="checkbox-container ps-3">
-                                            <!-- Added ps-3 for left padding -->
-                                            <div class="form-check mb-2">
-                                                <!-- Added mb-2 for spacing -->
-                                                <input class="form-check-input" type="checkbox" id="national" name="ElectionType" value="National Elections">
-                                                <label class="form-check-label" for="national">National Elections</label>
-                                            </div>
-                                            <div class="form-check mb-2">
-                                                <input class="form-check-input" type="checkbox" id="midterm" name="ElectionType" value="Midterm Elections">
-                                                <label class="form-check-label" for="midterm">Midterm Elections</label>
-                                            </div>
-                                            <div class="form-check mb-2">
-                                                <input class="form-check-input" type="checkbox" id="regional" name="ElectionType" value="Regional Elections">
-                                                <label class="form-check-label" for="regional">Regional Elections</label>
-                                            </div>
-                                            <div class="form-check mb-2">
-                                                <input class="form-check-input" type="checkbox" id="provincial" name="ElectionType" value="Provincial Elections">
-                                                <label class="form-check-label" for="provincial">Provincial Elections</label>
-                                            </div>
-                                            <div class="form-check mb-2">
-                                                <input class="form-check-input" type="checkbox" id="cityMunicipality" name="ElectionType" value="City/Municipality Elections">
-                                                <label class="form-check-label" for="cityMunicipality">City/Municipality Elections</label>
-                                            </div>
-                                            <div class="form-check mb-2">
-                                                <input class="form-check-input" type="checkbox" id="barangay" name="ElectionType" value="Barangay Elections">
-                                                <label class="form-check-label" for="barangay">Barangay Elections</label>
-                                            </div>
-                                            <div class="form-check mb-2">
-                                                <input class="form-check-input" type="checkbox" id="sk" name="ElectionType" value="SK Elections">
-                                                <label class="form-check-label" for="sk">Sangguniang Kabataan (SK) Elections</label>
-                                            </div>
+                                            @foreach (var electionType in ViewBag.ElectionTypes)
+                                            {
+                                                <div class="form-check mb-2">
+                                                    <input class="form-check-input" type="checkbox" name="ElectionType" value="@electionType">
+                                                    <label class="form-check-label">@electionType</label>
+                                                </div>
+                                            }
                                         </div>
                                     </div>
+
+
 
                                     <div class="mb-3">
                                         <label for="startDate" class="form-label">Start Date</label>
                                         <input type="date" class="form-control" id="startDate" name="StartDate" required>
                                     </div>
+
                                     <div class="mb-3">
                                         <label for="endDate" class="form-label">End Date</label>
                                         <input type="date" class="form-control" id="endDate" name="EndDate" required>
                                     </div>
+
                                     <div class="mb-3">
                                         <label for="status" class="form-label">Status</label>
                                         <select class="form-control" id="status" name="Status">
@@ -260,6 +240,7 @@
                                             <option value="Inactive">Inactive</option>
                                         </select>
                                     </div>
+
                                     <button type="submit" class="btn btn-success">Save Election</button>
                                 </form>
                             </div>
@@ -391,9 +372,8 @@
         <!-- page-body-wrapper ends -->
     </div>
 
-
     <script>
-             document.getElementById("addElectionForm").addEventListener("submit", function(event) {
+        document.getElementById("addElectionForm").addEventListener("submit", function(event) {
             event.preventDefault(); // Prevent default form submission
 
             // Get selected election types
@@ -428,8 +408,9 @@
             })
             .catch(error => console.error("Error:", error));
         });
-
     </script>
+
+
 
 
     <script>

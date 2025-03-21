@@ -35,7 +35,13 @@ namespace eElection.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Elections()
         {
-            var elections = _context.Elections.ToList(); // Retrieve all elections from the database
+            var elections = _context.Elections.ToList(); // Retrieve all elections
+            var electionTypes = _context.ElectionTypePositions
+                                        .Select(e => e.ElectionTypeName) // Select only the names
+                                        .Distinct() // Remove duplicates
+                                        .ToList();
+
+            ViewBag.ElectionTypes = electionTypes; // Pass unique election types to the view
             return View(elections);
         }
 
@@ -239,16 +245,29 @@ namespace eElection.Controllers
         }
         public async Task<IActionResult> ElectionTypePositions()
         {
-            var electionTypePositions = await _context.ElectionTypePositions
-                .Include(etp => etp.ElectionType)
-                .Include(etp => etp.Position)
+            var groupedElectionTypePositions = await _context.ElectionTypePositions
+                .Include(etp => etp.Position) // ✅ Include Position only
+                .GroupBy(etp => etp.ElectionTypeName) // ✅ Group by ElectionTypeName (since it's now a string)
+                .Select(group => new ElectionTypePositionsViewModel
+                {
+                    ElectionTypeName = group.Key, // ✅ Grouped by ElectionTypeName
+                    Positions = string.Join(", ", group.Select(etp => etp.Position.PositionName)) // ✅ Get all positions under this ElectionType
+                })
                 .ToListAsync();
 
-            // Pass ElectionTypes and Positions to the view for dropdowns
-            ViewBag.ElectionTypes = await _context.ElectionTypes.ToListAsync();
             ViewBag.Positions = await _context.Positions.ToListAsync();
 
-            return View(electionTypePositions);
+            return View(groupedElectionTypePositions); // ✅ Return ViewModel
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> CheckElectionTypeExists(string name)
+        {
+            bool exists = await _context.ElectionTypePositions
+                .AnyAsync(etp => etp.ElectionTypeName == name);
+
+            return Json(new { exists });
         }
 
         [HttpPost]
@@ -256,11 +275,22 @@ namespace eElection.Controllers
         {
             try
             {
-                // Parse ElectionTypeId safely
-                if (!requestData.TryGetProperty("ElectionTypeId", out var electionTypeIdElement) ||
-                    !electionTypeIdElement.TryGetInt32(out int electionTypeId))
+                // Parse ElectionTypeName safely
+                if (!requestData.TryGetProperty("ElectionTypeName", out var electionTypeNameElement) ||
+                    string.IsNullOrWhiteSpace(electionTypeNameElement.GetString()))
                 {
-                    return Json(new { success = false, message = "Invalid ElectionTypeId." });
+                    return Json(new { success = false, message = "Election Type is required." });
+                }
+
+                string electionTypeName = electionTypeNameElement.GetString();
+
+                // ✅ Check if ElectionTypeName already exists
+                bool exists = await _context.ElectionTypePositions
+                    .AnyAsync(etp => etp.ElectionTypeName == electionTypeName);
+
+                if (exists)
+                {
+                    return Json(new { success = false, message = "This Election Type already exists." });
                 }
 
                 // Parse PositionIds safely
@@ -274,14 +304,14 @@ namespace eElection.Controllers
                                   .Select(p => p.GetInt32())  // Extract int values from JSON array
                                   .ToList();
 
-                if (electionTypeId <= 0 || !positionIds.Any())
+                if (!positionIds.Any())
                 {
-                    return Json(new { success = false, message = "Invalid request data. ElectionTypeId and at least one PositionId must be provided." });
+                    return Json(new { success = false, message = "At least one Position must be selected." });
                 }
 
-                Console.WriteLine($"📌 Received: ElectionTypeId={electionTypeId}, Positions={string.Join(",", positionIds)}");
+                Console.WriteLine($"📌 Received: ElectionTypeName={electionTypeName}, Positions={string.Join(",", positionIds)}");
 
-                // Check if the provided Position IDs exist in the database
+                // ✅ Check if all Position IDs exist
                 var existingPositions = _context.Positions
                     .Where(p => positionIds.Contains(p.PositionId))
                     .Select(p => p.PositionId)
@@ -292,9 +322,10 @@ namespace eElection.Controllers
                     return Json(new { success = false, message = "Some Position IDs are invalid or do not exist." });
                 }
 
+                // ✅ Insert new election type positions
                 var newPositions = positionIds.Select(positionId => new ElectionTypePositions
                 {
-                    ElectionTypeId = electionTypeId,
+                    ElectionTypeName = electionTypeName,
                     PositionId = positionId
                 }).ToList();
 
@@ -398,7 +429,6 @@ namespace eElection.Controllers
                 return Json(new { success = false, message = "An error occurred while saving the election." });
             }
         }
-
         [HttpPost]
         public IActionResult AddElection([FromBody] Election model)
         {
@@ -409,6 +439,9 @@ namespace eElection.Controllers
 
             try
             {
+                // Store election types as a single comma-separated string
+                model.ElectionTypes = string.Join(",", model.ElectionTypes.Split(',').Distinct());
+
                 _context.Elections.Add(model);
                 _context.SaveChanges();
 
@@ -419,6 +452,8 @@ namespace eElection.Controllers
                 return Json(new { success = false, message = "An error occurred while adding the election.", error = ex.Message });
             }
         }
+
+
 
 
 

@@ -12,8 +12,8 @@ using eElection.Data;
 namespace eElection.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250318051651_AddElectionIdInVotes")]
-    partial class AddElectionIdInVotes
+    [Migration("20250321025924_UpdatingAll")]
+    partial class UpdatingAll
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -351,6 +351,46 @@ namespace eElection.Migrations
                         });
                 });
 
+            modelBuilder.Entity("eElection.Models.ElectionType", b =>
+                {
+                    b.Property<int>("ElectionTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ElectionTypeId"));
+
+                    b.Property<string>("ElectionTypeName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("ElectionTypeId");
+
+                    b.ToTable("ElectionTypes");
+                });
+
+            modelBuilder.Entity("eElection.Models.ElectionTypePositions", b =>
+                {
+                    b.Property<int>("ElectionTypePositionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ElectionTypePositionId"));
+
+                    b.Property<string>("ElectionTypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PositionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ElectionTypePositionId");
+
+                    b.HasIndex("PositionId");
+
+                    b.ToTable("ElectionTypePositions");
+                });
+
             modelBuilder.Entity("eElection.Models.Party", b =>
                 {
                     b.Property<int>("PartyId")
@@ -645,64 +685,16 @@ namespace eElection.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VoteId"));
 
+                    b.Property<int>("CandidateId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("DistrictRepId")
-                        .HasColumnType("int");
 
                     b.Property<int>("ElectionId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MidBarangayCaptainId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MidDistrictRepId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MidMayorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MidPartyListRepId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MidProvincialGovernorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MidProvincialViceGovernorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MidRegionalGovernorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MidRegionalViceGovernorId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MidSanggunianBarangay")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MidSanggunianBayan")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MidSanggunianPanlalawigan")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MidSenators")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("MidViceMayorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PartyListRepId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PresidentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Senators")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("VicePresidentId")
+                    b.Property<int>("PositionId")
                         .HasColumnType("int");
 
                     b.Property<int>("VoterId")
@@ -923,6 +915,17 @@ namespace eElection.Migrations
                     b.Navigation("Position");
 
                     b.Navigation("Voter");
+                });
+
+            modelBuilder.Entity("eElection.Models.ElectionTypePositions", b =>
+                {
+                    b.HasOne("eElection.Models.Position", "Position")
+                        .WithMany()
+                        .HasForeignKey("PositionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Position");
                 });
 
             modelBuilder.Entity("eElection.Models.VoteDetail", b =>

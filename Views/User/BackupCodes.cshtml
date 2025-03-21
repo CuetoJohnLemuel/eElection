@@ -1,4 +1,389 @@
-﻿Submit Vote
+﻿<div class="col-md-8">
+    <form action="/" method="post">
+        @* @if (ElectionId == null || string.IsNullOrEmpty(electionTypes)) *@
+        {
+            <div class="alert alert-danger">No election selected.</div>
+        }
+        else
+        {
+            <!-- National Positions -->
+            @* @if (electionTypes.Contains("National Elections")) *@
+            {
+                <div class="card mb-3 election-section" id="nationalSection">
+                    <div class="card-header bg-primary text-white">National Positions</div>
+                    <div class="card-body">
+                        <p><strong>National Elections (Every 6 Years for President, Every 3 Years for Others)</strong></p>
+
+                        <table class="table table-sm">
+                            <tr>
+                                <td>President</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="president" data-position="President">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Vice President</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="vp" data-position="Vice President">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Senators (Choose up to 12)</td>
+                                <td>
+                                    <div id="senators-container"></div>
+                                    <p><small>Selected: <span id="senators-count">0</span>/12</small></p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>District Representative</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="districtRep" data-position="District Representatives">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Party-List Representative</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="partyListRep" data-position="Party-List Representatives">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            }
+            @* @if (electionTypes.Contains("Midterm Elections")) *@
+            {
+                <!-- Midterm Elections -->
+                <div class="card mb-3 election-section" id="midtermSection">
+                    <div class="card-header bg-secondary text-white">Midterm Elections</div>
+                    <div class="card-body">
+                        <p><strong>Midterm Elections (Every 3 Years, Between Presidential Elections)</strong></p>
+
+                        <table class="table table-sm">
+                            <!-- Senators (Choose up to 12) -->
+                            <tr>
+                                <td>Senators (Choose up to 12)</td>
+                                <td>
+                                    <div id="senators-container"></div>
+                                    <p><small>Selected: <span id="senators-count">0</span>/12</small></p>
+                                </td>
+                            </tr>
+                            <!-- District Representative -->
+                            <tr>
+                                <td>District Representative</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="districtRep" data-position="District Representatives">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- Party-List Representative -->
+                            <tr>
+                                <td>Party-List Representative</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="partyListRep" data-position="Party-List Representatives">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- Regional Governor -->
+                            <tr>
+                                <td>Regional Governor</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="regionalGovernor" data-position="Regional Governor">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- Regional Vice Governor -->
+                            <tr>
+                                <td>Regional Vice Governor</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="regionalViceGovernor" data-position="Regional Vice Governor">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- Provincial Governor -->
+                            <tr>
+                                <td>Governor</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="governor" data-position="Governor">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- Provincial Vice Governor -->
+                            <tr>
+                                <td>Vice Governor</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="viceGovernor" data-position="Vice Governor">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- Sangguniang Panlalawigan Members -->
+                            <tr>
+                                <td>Sangguniang Panlalawigan Members</td>
+                                <td>
+                                    <div id="sanggunianPanlalawigan-container"></div>
+                                    <p><small>Selected: <span id="sanggunianPanlalawigan-count">0</span>/5</small></p>
+                                </td>
+                            </tr>
+                            <!-- City/Municipal Mayor -->
+                            <tr>
+                                <td>Mayor</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="cityMunicipalMayor" data-position="City/Municipal Mayor">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- City/Municipal Vice Mayor -->
+                            <tr>
+                                <td>Vice Mayor</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="cityMunicipalViceMayor" data-position="City/Municipal Vice Mayor">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- Sangguniang Panlungsod/Bayan Members -->
+                            <tr>
+                                <td>Sangguniang Panlungsod/Bayan Members</td>
+                                <td>
+                                    <div id="sanggunianPanlungsod-container"></div>
+                                    <p><small>Selected: <span id="sanggunianPanlungsod-count">0</span>/10</small></p>
+                                </td>
+                            </tr>
+                            <!-- Barangay Captain -->
+                            <tr>
+                                <td>Barangay Captain</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="barangayCaptain" data-position="Barangay Captain (Punong Barangay)">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- Sangguniang Barangay Members -->
+                            <tr>
+                                <td>Sangguniang Barangay Members</td>
+                                <td>
+                                    <div id="sanggunianBarangay-container"></div>
+                                    <p><small>Selected: <span id="sanggunianBarangay-count">0</span>/7</small></p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            }
+
+            @* @if (electionTypes.Contains("Regional Elections")) *@
+            {
+                <!-- Regional Elections -->
+                <div class="card mb-3 election-section" id="regionalSection">
+                    <div class="card-header bg-primary text-white">Regional Elections</div>
+                    <div class="card-body">
+                        <p><strong>Regional Elections (For Autonomous Regions like BARMM)</strong></p>
+
+                        <table class="table table-sm">
+                            <!-- Regional Governor -->
+                            <tr>
+                                <td>Regional Governor</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="regionalGovernor" data-position="Regional Governor">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- Regional Vice Governor -->
+                            <tr>
+                                <td>Regional Vice Governor</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="regionalViceGovernor" data-position="Regional Vice Governor">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- Regional Assembly Members -->
+                            @* <tr> *@
+                            @*     <td>Regional Assembly Members</td> *@
+                            @*     <td> *@
+                            @*         <select class="form-select" id="regionalAssemblyMembers" multiple> *@
+                            @*             <option value="Member 1">Member 1</option> *@
+                            @*             <option value="Member 2">Member 2</option> *@
+                            @*             <option value="Member 3">Member 3</option> *@
+                            @*             <option value="Member 4">Member 4</option> *@
+                            @*             <option value="Member 5">Member 5</option> *@
+                            @*         </select> *@
+                            @*     </td> *@
+                            @* </tr> *@
+                        </table>
+                    </div>
+                </div>
+            }
+            @* @if (electionTypes.Contains("Provincial Elections")) *@
+            {
+                <!-- Provincial Elections -->
+                <div class="card mb-3 election-section" id="provincialSection">
+                    <div class="card-header bg-primary text-white">Provincial Elections</div>
+                    <div class="card-body">
+                        <p><strong>Provincial Elections (Every 3 Years)</strong></p>
+
+                        <table class="table table-sm">
+                            <!-- Governor -->
+                            <tr>
+                                <td>Governor</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="governor" data-position="Governor">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- Vice Governor -->
+                            <tr>
+                                <td>Vice Governor</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="viceGovernor" data-position="Vice Governor">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- Sangguniang Panlalawigan Members -->
+                            <tr>
+                                <td>Sangguniang Panlalawigan Members</td>
+                                <td>
+                                    <div id="sanggunianPanlalawigan-container"></div>
+                                    <p><small>Selected: <span id="sanggunianPanlalawigan-count">0</span>/5</small></p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            }
+            @* @if (electionTypes.Contains("City/Municipality Elections")) *@
+            {
+                <!-- City/Municipal Elections -->
+                <div class="card mb-3 election-section" id="cityMunicipalSection">
+                    <div class="card-header bg-primary text-white">City/Municipal Elections</div>
+                    <div class="card-body">
+                        <p><strong>City/Municipal Elections (Every 3 Years)</strong></p>
+
+                        <table class="table table-sm">
+                            <!-- Mayor -->
+                            <tr>
+                                <td>Mayor</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="mayor" data-position="City/Municipal Mayor">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- Vice Mayor -->
+                            <tr>
+                                <td>Vice Mayor</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="viceMayor" data-position="City/Municipal Vice Mayor">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- Sangguniang Panlungsod/Bayan Members -->
+                            <tr>
+                                <td>Sangguniang Panlungsod/Bayan Members</td>
+                                <td>
+                                    <div id="sanggunianPanlungsod-container"></div>
+                                    <p><small>Selected: <span id="sanggunianPanlungsod-count">0</span>/10</small></p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            }
+            @* @if (electionTypes.Contains("Barangay Elections")) *@
+            {
+                <!-- Barangay Elections -->
+                <div class="card mb-3 election-section" id="barangaySection">
+                    <div class="card-header bg-primary text-white">Barangay Elections</div>
+                    <div class="card-body">
+                        <p><strong>Barangay Elections (Every 3 Years)</strong></p>
+
+                        <table class="table table-sm">
+                            <!-- Barangay Captain -->
+                            <tr>
+                                <td>Barangay Captain (Punong Barangay)</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="barangayCaptain" data-position="Barangay Captain (Punong Barangay)">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- Sangguniang Barangay Members -->
+                            <tr>
+                                <td>Sangguniang Barangay Members</td>
+                                <td>
+                                    <div id="sanggunianBarangay-container"></div>
+                                    <p><small>Selected: <span id="sanggunianBarangay-count">0</span>/7</small></p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            }
+            @* @if (electionTypes.Contains("SK Elections")) *@
+            {
+                <!-- Barangay Elections -->
+                <div class="card mb-3 election-section" id="barangaySection">
+                    <div class="card-header bg-primary text-white">Barangay Elections</div>
+                    <div class="card-body">
+                        <p><strong>Barangay Elections (Every 3 Years)</strong></p>
+
+                        <table class="table table-sm">
+
+
+                            <tr>
+                                <td>SK Chairman (Youth Leader of the Barangay)</td>
+                                <td>
+                                    <select class="form-select candidate-dropdown" id="skChairman" data-position="Sangguniang Kabataan (SK) Chairman">
+                                        <option value="">Select Candidate</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- SK Members -->
+                            <tr>
+                                <td>SK Members (Youth Legislative Body)</td>
+                                <td>
+                                    <div id="sanggunianKabataan-container"></div>
+                                    <p><small>Selected: <span id="sanggunianKabataan-count">0</span>/7</small></p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            }
+        }
+        @{
+            var electionId = ViewBag.ElectionId ?? 0; // Default to 0 if null
+        }
+
+        <input type="hidden" id="electionId" value="@ViewBag.ElectionId" />
+
+        <button id="submitVote" class="btn btn-success mt-3">Submit Vote</button>
+
+    </form>
+</div>
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+Submit Vote
  [HttpPost]
         public IActionResult SubmitVote([FromBody] VoteRequest voteRequest)
         {

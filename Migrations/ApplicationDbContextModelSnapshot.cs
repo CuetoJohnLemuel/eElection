@@ -368,16 +368,20 @@ namespace eElection.Migrations
 
             modelBuilder.Entity("eElection.Models.ElectionTypePositions", b =>
                 {
-                    b.Property<int>("ElectionTypeId")
+                    b.Property<int>("ElectionTypePositionId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ElectionTypePositionId"));
+
+                    b.Property<string>("ElectionTypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PositionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ElectionTypePositionId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ElectionTypeId", "PositionId");
+                    b.HasKey("ElectionTypePositionId");
 
                     b.HasIndex("PositionId");
 
@@ -912,19 +916,11 @@ namespace eElection.Migrations
 
             modelBuilder.Entity("eElection.Models.ElectionTypePositions", b =>
                 {
-                    b.HasOne("eElection.Models.ElectionType", "ElectionType")
-                        .WithMany("ElectionTypePositions")
-                        .HasForeignKey("ElectionTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("eElection.Models.Position", "Position")
                         .WithMany("ElectionTypePositions")
                         .HasForeignKey("PositionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ElectionType");
 
                     b.Navigation("Position");
                 });
@@ -943,11 +939,6 @@ namespace eElection.Migrations
             modelBuilder.Entity("eElection.Models.Election", b =>
                 {
                     b.Navigation("Candidates");
-                });
-
-            modelBuilder.Entity("eElection.Models.ElectionType", b =>
-                {
-                    b.Navigation("ElectionTypePositions");
                 });
 
             modelBuilder.Entity("eElection.Models.Party", b =>
