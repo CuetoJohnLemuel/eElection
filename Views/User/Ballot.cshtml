@@ -80,7 +80,7 @@
         <div class="row">
             <!-- Ballot Forms -->
             <div class="col-md-8">
-                <form action="/" method="post">
+                <form action="/" method="post" id="voteForm">
                     @if (ViewBag.ElectionId == null || string.IsNullOrEmpty(ViewBag.ElectionTypes))
                     {
                         <div class="alert alert-danger">No election selected.</div>
@@ -90,15 +90,34 @@
                         <div class="card mb-3 election-section">
                             <div class="card-header bg-primary text-white">@ViewBag.ElectionTypes Positions</div>
                             <div class="card-body">
+                                <div id="debug-info" class="alert alert-info" style="display: none;">
+                                    <strong>Debug Info:</strong>
+                                    <div id="debug-content"></div>
+                                </div>
+
                                 <table class="table table-sm">
                                     @foreach (var position in ViewBag.Positions)
                                     {
                                         <tr>
-                                            <td>@position</td>
                                             <td>
-                                                <select class="form-select candidate-dropdown" data-position="@position">
-                                                    <option value="">Select Candidate</option>
-                                                </select>
+                                                <strong>@position.PositionName</strong>
+                                                @if (position.MaxCandidates > 1)
+                                                {
+                                                    <small class="text-muted">(Select up to @position.MaxCandidates)</small>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="candidate-container"
+                                                     data-position="@position.PositionName"
+                                                     data-positionid="@position.PositionId"
+                                                     data-max="@position.MaxCandidates">
+                                                    <!-- Candidates will be loaded here -->
+                                                    <div class="text-center">
+                                                        <div class="spinner-border spinner-border-sm" role="status">
+                                                            <span class="visually-hidden">Loading...</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </td>
                                         </tr>
                                     }
@@ -106,15 +125,24 @@
                             </div>
                         </div>
                     }
-                    @{
-                        var electionId = ViewBag.ElectionId ?? 0; // Default to 0 if null
-                    }
 
-                    <input type="hidden" id="electionId" value="@ViewBag.ElectionId" />
+                    <!-- Hidden fields for form submission -->
+                    <input type="hidden" id="electionId" name="electionId" value="@ViewBag.ElectionId" />
+                    <input type="hidden" id="voterId" name="voterId" value="@(ViewBag.VoterId ?? 0)" />
 
-                    <button id="submitVote" class="btn btn-success mt-3">Submit Vote</button>
+                    <div class="row">
+                        <div class="col">
+                            <button id="submitVote" class="btn btn-success mt-3">Submit Vote</button>
 
+                            <!-- Add a debug button for development -->
+                            @* @if (System.Diagnostics.Debugger.IsAttached || true) *@
+                            @* { *@
+                            @*     <button id="debugBtn" type="button" class="btn btn-secondary mt-3 ms-2">Debug</button> *@
+                            @* } *@
+                        </div>
+                    </div>
                 </form>
+
             </div>
 
 
@@ -143,40 +171,67 @@
 
     <!-- Main JS File -->
     <script src="~/assetss/js/main.js"></script>
+
+
     <script>
         var electionType = "@ViewBag.ElectionType";
         console.log("Election Type received:", electionType);
     </script>
 
     <script>
-    $(document).ready(function () {
-        $(".candidate-dropdown").each(function () {
-            var position = $(this).data("position");
-            var selectElement = $(this);
+        $(document).ready(function () {
+            $(".candidate-dropdown").each(function () {
+                var position = $(this).data("position");
+                var maxCandidates = $(this).data("max");
+                var selectElement = $(this);
 
-            $.ajax({
-                url: "/User/GetCandidates",
-                type: "GET",
-                data: { position: position },
-                success: function (data) {
-                    $.each(data, function (index, candidate) {
-                        selectElement.append(new Option(candidate.name, candidate.id));
-                    });
-                }
+                $.ajax({
+                    url: "/User/GetCandidates",
+                    type: "GET",
+                    data: { position: position },
+                    success: function (data) {
+                        $.each(data, function (index, candidate) {
+                            selectElement.append(new Option(candidate.name, candidate.id));
+                        });
+                    }
+                });
+
+                selectElement.on("change", function () {
+                    var selectedOptions = $(this).find("option:selected");
+                    if (selectedOptions.length > maxCandidates) {
+                        alert("You can only select up to " + maxCandidates + " candidates for " + position);
+                        selectedOptions.last().prop("selected", false);
+                    }
+                });
             });
         });
-    });
 </script>
 
 
     <script>
-        $(document).ready(function () {
+        // Add a debug button helper for development
+        $(document).ready(function() {
+            $("#debugBtn").click(function() {
+                let debug = "";
+
+                $(".candidate-container").each(function() {
+                    let container = $(this);
+                    let posName = container.attr("data-position");
+                    let posId = container.attr("data-positionid");
+                    let selected = container.find("input:checked").length;
+
+                    debug += `<p>Position: ${posName} (ID: ${posId}), Selected: ${selected}</p>`;
+                });
+
+                $("#debug-content").html(debug);
+                $("#debug-info").show();
+            });
+        });
+    </script>
+
+    <script>
+                  $(document).ready(function () {
             let positionMap = {};
-            let selectedSenators = [];
-            let selectedSanggunianPanlalawigan = [];
-            let selectedSanggunianPanlungsod = [];
-            let selectedSanggunianBarangay = [];
-            let selectedSanggunianKabataan = [];
 
             function loadPositions() {
                 $.ajax({
@@ -195,8 +250,8 @@
                             positionMap[formattedPositionName] = position.PositionId;
                         });
 
-                        console.log("📌 Position Map:", positionMap); // Debugging
-                        $(".candidate-dropdown").each(function () {
+                        console.log("📌 Position Map:", positionMap);
+                        $(".candidate-container").each(function () {
                             let positionName = $(this).attr("data-position").toLowerCase().trim();
                             let positionId = positionMap[positionName];
 
@@ -207,11 +262,6 @@
                         });
 
                         loadAllCandidates();
-                        loadSenators();
-                        loadSanggunianPanlalawigan();
-                        loadSanggunianPanlungsod();
-                        loadSanggunianBarangay();
-                        loadSanggunianKabataan();
                     },
                     error: function (xhr) {
                         console.error("❌ Error retrieving positions:", xhr.responseText);
@@ -220,10 +270,10 @@
             }
 
             function loadCandidates(positionName) {
-                let dropdown = $(`select[data-position='${positionName}']`);
+                let container = $(`div[data-position='${positionName}']`);
 
-                if (!dropdown.length) {
-                    console.warn(`⚠️ Dropdown not found for '${positionName}'`);
+                if (!container.length) {
+                    console.warn(`⚠️ Container not found for '${positionName}'`);
                     return;
                 }
 
@@ -232,26 +282,74 @@
                     type: 'GET',
                     data: { positionName: positionName },
                     success: function (response) {
-                        dropdown.empty().append('<option value="">Select Candidate</option>');
+                        container.empty();
 
                         if (response.success && response.data.length > 0) {
+                            const maxCandidates = parseInt(container.attr("data-max")) || 1;
+                            const useRadio = maxCandidates === 1;
+                            const inputType = useRadio ? 'radio' : 'checkbox';
+                            const inputName = useRadio ? `candidate-${positionName.replace(/\s+/g, '-')}` : '';
+
+                            // Store the positionId from the first candidate
+                            if (response.data.length > 0 && response.data[0].positionId) {
+                                container.attr("data-positionid", response.data[0].positionId);
+                            }
+
+                            // Add selection counter for multiple selections
+                            if (!useRadio) {
+                                container.append(`
+                                    <div class="selection-counter mb-2">
+                                        Selected: <span class="selected-count">0</span> / ${maxCandidates}
+                                    </div>
+                                `);
+                            }
+
                             response.data.forEach(candidate => {
-                                dropdown.append(`<option value="${candidate.candidateId}" data-positionid="${candidate.positionId}">
-                                    ${candidate.fullName}
-                                </option>`);
+                                const inputId = `candidate-${candidate.candidateId}`;
+                                container.append(`
+                                    <div class="form-check">
+                                        <input class="form-check-input candidate-option"
+                                            type="${inputType}"
+                                            name="${inputName}"
+                                            id="${inputId}"
+                                            value="${candidate.candidateId}"
+                                            data-positionid="${candidate.positionId}">
+                                        <label class="form-check-label" for="${inputId}">
+                                            ${candidate.fullName}
+                                        </label>
+                                    </div>
+                                `);
                             });
+
+                            // Add event listeners for checkboxes to enforce max selection
+                            if (!useRadio) {
+                                container.find('input[type="checkbox"]').on('change', function() {
+                                    const maxAllowed = parseInt(container.attr("data-max"));
+                                    const checkedBoxes = container.find('input[type="checkbox"]:checked');
+
+                                    // Update counter
+                                    container.find('.selected-count').text(checkedBoxes.length);
+
+                                    if (checkedBoxes.length > maxAllowed) {
+                                        alert(`You can only select up to ${maxAllowed} candidates for ${positionName}`);
+                                        $(this).prop('checked', false);
+                                        container.find('.selected-count').text(maxAllowed);
+                                    }
+                                });
+                            }
                         } else {
-                            dropdown.append('<option value="">No candidates found</option>');
+                            container.append('<div class="alert alert-warning">No candidates found</div>');
                         }
                     },
                     error: function (xhr) {
                         console.error(`❌ Error retrieving candidates for ${positionName}:`, xhr.responseText);
+                        container.empty().append('<div class="alert alert-danger">Error loading candidates</div>');
                     }
                 });
             }
 
             function loadAllCandidates() {
-                $(".candidate-dropdown").each(function () {
+                $(".candidate-container").each(function () {
                     let positionName = $(this).attr("data-position");
                     if (positionName) {
                         loadCandidates(positionName);
@@ -259,245 +357,11 @@
                 });
             }
 
-            function loadSenators() {
-                $.ajax({
-                    url: '/User/GetCandidatesByPosition',
-                    type: 'GET',
-                    data: { positionName: "Senators" },
-                    success: function (response) {
-                        if (response.success && response.data.length > 0) {
-                            let senatorContainer = $("#senators-container");
-                            senatorContainer.empty();
-
-                            response.data.forEach(candidate => {
-                                let checkbox = `<div>
-                                    <input type="checkbox" class="senator-checkbox" value="${candidate.candidateId}" data-positionid="${candidate.positionId}">
-                                    <label>${candidate.fullName}</label>
-                                </div>`;
-                                senatorContainer.append(checkbox);
-                            });
-
-                            $(".senator-checkbox").change(function () {
-                                updateSenatorSelection($(this));
-                            });
-                        }
-                    },
-                    error: function (xhr) {
-                        console.error("❌ Error retrieving senator candidates:", xhr.responseText);
-                    }
-                });
-            }
-
-            function updateSenatorSelection(checkbox) {
-                let candidateId = checkbox.val();
-                let positionId = checkbox.attr("data-positionid");
-
-                if (checkbox.is(":checked")) {
-                    if (selectedSenators.length < 12) {
-                        selectedSenators.push({ CandidateId: parseInt(candidateId), PositionId: parseInt(positionId) });
-                    } else {
-                        checkbox.prop("checked", false);
-                        alert("⚠️ You can only select up to 12 senators.");
-                    }
-                } else {
-                    selectedSenators = selectedSenators.filter(senator => senator.CandidateId !== parseInt(candidateId));
-                }
-
-                $("#senators-count").text(selectedSenators.length);
-            }
-
-            function loadSanggunianPanlalawigan() {
-                $.ajax({
-                    url: '/User/GetCandidatesByPosition',
-                    type: 'GET',
-                    data: { positionName: "Sangguniang Panlalawigan Members" },
-                    success: function (response) {
-                        if (response.success && response.data.length > 0) {
-                            let sanggunianPanlalawiganContainer = $("#sanggunianPanlalawigan-container");
-                            sanggunianPanlalawiganContainer.empty();
-
-                            response.data.forEach(candidate => {
-                                let checkbox = `<div>
-                                    <input type="checkbox" class="sanggunianPanlalawigan-checkbox" value="${candidate.candidateId}" data-positionid="${candidate.positionId}">
-                                    <label>${candidate.fullName}</label>
-                                </div>`;
-                                sanggunianPanlalawiganContainer.append(checkbox);
-                            });
-
-                            $(".sanggunianPanlalawigan-checkbox").change(function () {
-                                updateSanggunianPanlalawiganSelection($(this));
-                            });
-                        }
-                    },
-                    error: function (xhr) {
-                        console.error("❌ Error retrieving senator candidates:", xhr.responseText);
-                    }
-                });
-            }
-
-            function updateSanggunianPanlalawiganSelection(checkbox) {
-                let candidateId = checkbox.val();
-                let positionId = checkbox.attr("data-positionid");
-
-                if (checkbox.is(":checked")) {
-                    if (selectedSanggunianPanlalawigan.length < 5) {
-                        selectedSanggunianPanlalawigan.push({ CandidateId: parseInt(candidateId), PositionId: parseInt(positionId) });
-                    } else {
-                        checkbox.prop("checked", false);
-                        alert("⚠️ You can only select up to 5 sanggunian panlalawigan.");
-                    }
-                } else {
-                    selectedSanggunianPanlalawigan = selectedSanggunianPanlalawigan.filter(sanggunianPanlalawigan => sanggunianPanlalawigan.CandidateId !== parseInt(candidateId));
-                }
-
-                $("#sanggunianPanlalawigan-count").text(selectedSanggunianPanlalawigan.length);
-            }
-
-            function loadSanggunianPanlungsod() {
-                $.ajax({
-                    url: '/User/GetCandidatesByPosition',
-                    type: 'GET',
-                    data: { positionName: "Sangguniang Panlungsod/Bayan Members" },
-                    success: function (response) {
-                        if (response.success && response.data.length > 0) {
-                            let sanggunianPanlungsodContainer = $("#sanggunianPanlungsod-container");
-                            sanggunianPanlungsodContainer.empty();
-
-                            response.data.forEach(candidate => {
-                                let checkbox = `<div>
-                                    <input type="checkbox" class="sanggunianPanlungsod-checkbox" value="${candidate.candidateId}" data-positionid="${candidate.positionId}">
-                                    <label>${candidate.fullName}</label>
-                                </div>`;
-                                sanggunianPanlungsodContainer.append(checkbox);
-                            });
-
-                            $(".sanggunianPanlungsod-checkbox").change(function () {
-                                updateSanggunianPanlungsodSelection($(this));
-                            });
-                        }
-                    },
-                    error: function (xhr) {
-                        console.error("❌ Error retrieving senator candidates:", xhr.responseText);
-                    }
-                });
-            }
-
-            function updateSanggunianPanlungsodSelection(checkbox) {
-                let candidateId = checkbox.val();
-                let positionId = checkbox.attr("data-positionid");
-
-                if (checkbox.is(":checked")) {
-                    if (selectedSanggunianPanlungsod.length < 10) {
-                        selectedSanggunianPanlungsod.push({ CandidateId: parseInt(candidateId), PositionId: parseInt(positionId) });
-                    } else {
-                        checkbox.prop("checked", false);
-                        alert("⚠️ You can only select up to 10 sanggunian panlungsod.");
-                    }
-                } else {
-                    selectedSanggunianPanlungsod = selectedSanggunianPanlungsod.filter(sanggunianPanlungsod => sanggunianPanlungsod.CandidateId !== parseInt(candidateId));
-                }
-
-                $("#sanggunianPanlungsod-count").text(selectedSanggunianPanlungsod.length);
-            }
-
-            function loadSanggunianBarangay() {
-                $.ajax({
-                    url: '/User/GetCandidatesByPosition',
-                    type: 'GET',
-                    data: { positionName: "Sangguniang Barangay Members" },
-                    success: function (response) {
-                        if (response.success && response.data.length > 0) {
-                            let sanggunianBarangayContainer = $("#sanggunianBarangay-container");
-                            sanggunianBarangayContainer.empty();
-
-                            response.data.forEach(candidate => {
-                                let checkbox = `<div>
-                                    <input type="checkbox" class="sanggunianBarangay-checkbox" value="${candidate.candidateId}" data-positionid="${candidate.positionId}">
-                                    <label>${candidate.fullName}</label>
-                                </div>`;
-                                sanggunianBarangayContainer.append(checkbox);
-                            });
-
-                            $(".sanggunianBarangay-checkbox").change(function () {
-                                updateSanggunianBarangaySelection($(this));
-                            });
-                        }
-                    },
-                    error: function (xhr) {
-                        console.error("❌ Error retrieving sanggunian barangay candidates:", xhr.responseText);
-                    }
-                });
-            }
-
-            function updateSanggunianBarangaySelection(checkbox) {
-                let candidateId = checkbox.val();
-                let positionId = checkbox.attr("data-positionid");
-
-                if (checkbox.is(":checked")) {
-                    if (selectedSanggunianBarangay.length < 7) {
-                        selectedSanggunianBarangay.push({ CandidateId: parseInt(candidateId), PositionId: parseInt(positionId) });
-                    } else {
-                        checkbox.prop("checked", false);
-                        alert("⚠️ You can only select up to 7 sanggunian barangay.");
-                    }
-                } else {
-                    selectedSanggunianBarangay = selectedSanggunianBarangay.filter(sanggunianBarangay => sanggunianBarangay.CandidateId !== parseInt(candidateId));
-                }
-
-                $("#sanggunianBarangay-count").text(selectedSanggunianBarangay.length);
-            }
-
-              function loadSanggunianKabataan() {
-                $.ajax({
-                    url: '/User/GetCandidatesByPosition',
-                    type: 'GET',
-                    data: { positionName: "Sangguniang Kabataan (SK) Members" },
-                    success: function (response) {
-                        if (response.success && response.data.length > 0) {
-                            let sanggunianKabataanContainer = $("#sanggunianKabataan-container");
-                            sanggunianKabataanContainer.empty();
-
-                            response.data.forEach(candidate => {
-                                let checkbox = `<div>
-                                    <input type="checkbox" class="sanggunianKabataan-checkbox" value="${candidate.candidateId}" data-positionid="${candidate.positionId}">
-                                    <label>${candidate.fullName}</label>
-                                </div>`;
-                                sanggunianKabataanContainer.append(checkbox);
-                            });
-
-                            $(".sanggunianKabataan-checkbox").change(function () {
-                                updateSanggunianKabataanSelection($(this));
-                            });
-                        }
-                    },
-                    error: function (xhr) {
-                        console.error("❌ Error retrieving sanggunian kabataan candidates:", xhr.responseText);
-                    }
-                });
-            }
-
-            function updateSanggunianKabataanSelection(checkbox) {
-                let candidateId = checkbox.val();
-                let positionId = checkbox.attr("data-positionid");
-
-                if (checkbox.is(":checked")) {
-                    if (selectedSanggunianKabataan.length < 7) {
-                        selectedSanggunianKabataan.push({ CandidateId: parseInt(candidateId), PositionId: parseInt(positionId) });
-                    } else {
-                        checkbox.prop("checked", false);
-                        alert("⚠️ You can only select up to 7 sanggunian kabataan.");
-                    }
-                } else {
-                    selectedSanggunianKabataan = selectedSanggunianKabataan.filter(sanggunianKabataan => sanggunianKabataan.CandidateId !== parseInt(candidateId));
-                }
-
-                $("#sanggunianKabataan-count").text(selectedSanggunianKabataan.length);
-            }
-
             $("#submitVote").click(function (e) {
                 e.preventDefault();
 
-                let voterId = 22; // Replace with actual voter ID
+                // Get the voter ID from a hidden field or session
+                let voterId = $("#voterId").val() || 0; // Use a hidden field or default to 0
                 let electionId = parseInt($("#electionId").val());
 
                 if (!electionId) {
@@ -508,84 +372,54 @@
                 let votes = [];
                 let hasSelection = false;
 
-                $(".candidate-dropdown").each(function () {
-                    let dropdown = $(this);
-                    let candidateId = dropdown.val();
+                // Debug information
+                console.log("Looking for votes in containers:", $(".candidate-container").length);
 
-                    if (candidateId && candidateId !== "") {
+                $(".candidate-container").each(function () {
+                    let container = $(this);
+                    let positionId = parseInt(container.attr("data-positionid"));
+                    let positionName = container.attr("data-position");
+                    let maxAllowed = parseInt(container.attr("data-max")) || 1;
+
+                    // Find all checked inputs within this container
+                    let selectedInputs = container.find('input:checked');
+
+                    console.log(`Position: ${positionName}, ID: ${positionId}, Selected: ${selectedInputs.length}`);
+
+                    if (selectedInputs.length > 0) {
                         hasSelection = true;
-                        let positionId = dropdown.find("option:selected").attr("data-positionid") || 0;
 
-                        votes.push({
-                            VoterId: voterId,
-                            ElectionId: electionId,
-                            PositionId: parseInt(positionId),
-                            CandidateId: parseInt(candidateId)
+                        if (selectedInputs.length > maxAllowed) {
+                            alert(`⚠️ You can only select up to ${maxAllowed} candidates for ${positionName}.`);
+                            return false; // Stop execution
+                        }
+
+                        selectedInputs.each(function() {
+                            let candidateId = parseInt($(this).val());
+                            let candidateVote = {
+                                VoterId: voterId,
+                                ElectionId: electionId,
+                                PositionId: positionId,
+                                CandidateId: candidateId
+                            };
+
+                            console.log("Adding vote:", candidateVote);
+                            votes.push(candidateVote);
                         });
                     }
                 });
 
-                if (selectedSenators.length > 0) {
-                    hasSelection = true;
-                    selectedSenators.forEach(senator => {
-                        votes.push({
-                            VoterId: voterId,
-                            ElectionId: electionId,
-                            PositionId: senator.PositionId,
-                            CandidateId: senator.CandidateId
-                        });
-                    });
-                }
-                 if (selectedSanggunianPanlalawigan.length > 0) {
-                    hasSelection = true;
-                        selectedSanggunianPanlalawigan.forEach(sanggunianPanlalawigan => {
-                        votes.push({
-                            VoterId: voterId,
-                            ElectionId: electionId,
-                            PositionId: sanggunianPanlalawigan.PositionId,
-                            CandidateId: sanggunianPanlalawigan.CandidateId
-                        });
-                    });
-                }
-                 if (selectedSanggunianPanlungsod.length > 0) {
-                    hasSelection = true;
-                        selectedSanggunianPanlungsod.forEach(sanggunianPanlungsod => {
-                        votes.push({
-                            VoterId: voterId,
-                            ElectionId: electionId,
-                            PositionId: sanggunianPanlungsod.PositionId,
-                            CandidateId: sanggunianPanlungsod.CandidateId
-                        });
-                    });
-                }
-                if (selectedSanggunianBarangay.length > 0) {
-                    hasSelection = true;
-                        selectedSanggunianBarangay.forEach(sanggunianBarangay => {
-                        votes.push({
-                            VoterId: voterId,
-                            ElectionId: electionId,
-                            PositionId: sanggunianBarangay.PositionId,
-                            CandidateId: sanggunianBarangay.CandidateId
-                        });
-                    });
-                }
-                if (selectedSanggunianKabataan.length > 0) {
-                    hasSelection = true;
-                        selectedSanggunianKabataan.forEach(sanggunianKabataan => {
-                        votes.push({
-                            VoterId: voterId,
-                            ElectionId: electionId,
-                            PositionId: sanggunianKabataan.PositionId,
-                            CandidateId: sanggunianKabataan.CandidateId
-                        });
-                    });
-                }
-                if (!hasSelection) {
+                console.log("Total votes collected:", votes.length);
+
+                if (!hasSelection || votes.length === 0) {
                     alert("⚠️ Please select at least one candidate.");
                     return;
                 }
 
-                console.log("Submitting votes:", votes);
+                // Show loading state
+                $("#submitVote").prop("disabled", true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...');
+
+                console.log("Submitting votes:", JSON.stringify(votes));
 
                 $.ajax({
                     url: "/User/SubmitVote",
@@ -593,14 +427,18 @@
                     contentType: "application/json",
                     data: JSON.stringify(votes),
                     success: function (response) {
+                        $("#submitVote").prop("disabled", false).text("Submit Vote");
+
                         if (response.success) {
                             alert("✅ Vote submitted successfully!");
                             location.reload();
                         } else {
-                            alert("❌ Server error: " + response.message);
+                            alert("❌ Server error: " + (response.message || "Unknown error"));
+                            console.error("Server error:", response);
                         }
                     },
                     error: function (xhr) {
+                        $("#submitVote").prop("disabled", false).text("Submit Vote");
                         console.error("Submit vote error:", xhr.responseText);
                         alert("❌ An error occurred while submitting your vote. Check console for details.");
                     }

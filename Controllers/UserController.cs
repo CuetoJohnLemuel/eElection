@@ -74,7 +74,6 @@ namespace eElection.Controllers
 
         //    return View();
         //}
-
         [Authorize(Roles = "Voter")]
         public IActionResult Ballot(int? electionId)
         {
@@ -83,7 +82,6 @@ namespace eElection.Controllers
                 return RedirectToAction("Index"); // Redirect if electionId is missing
             }
 
-            // First, retrieve the election data in memory
             var electionData = _context.Elections
                 .Where(e => e.ElectionId == electionId)
                 .Select(e => new
@@ -98,27 +96,30 @@ namespace eElection.Controllers
                 return NotFound("Election not found.");
             }
 
-            // Split the election types in memory
             var electionTypeNames = electionData.ElectionTypes.Split(',')
-                .Select(et => et.Trim()) // Trim spaces
+                .Select(et => et.Trim())
                 .ToList();
 
-            // Query positions based on multiple election types
             var positions = _context.ElectionTypePositions
                 .Where(etp => electionTypeNames.Contains(etp.ElectionTypeName))
                 .Join(_context.Positions,
                       etp => etp.PositionId,
                       p => p.PositionId,
-                      (etp, p) => p.PositionName)
+                      (etp, p) => new
+                      {
+                          p.PositionId,
+                          p.PositionName,
+                          p.MaxCandidates // Assuming MaxCandidates column exists
+                      })
                 .ToList();
 
-            // Pass data to the View
             ViewBag.ElectionId = electionData.ElectionId;
             ViewBag.ElectionTypes = electionData.ElectionTypes ?? "";
             ViewBag.Positions = positions;
 
             return View();
         }
+
 
 
         [HttpGet]
@@ -194,24 +195,35 @@ namespace eElection.Controllers
         {
             try
             {
-                // Get the logged-in voter's ID from claims
                 var voterIdClaim = User.Claims.FirstOrDefault(c => c.Type == "VoterId");
                 if (voterIdClaim == null)
                 {
                     return Json(new { success = false, message = "Unauthorized: Voter ID not found." });
                 }
 
-                int voterId = int.Parse(voterIdClaim.Value); // Convert claim value to integer
+                int voterId = int.Parse(voterIdClaim.Value);
 
                 if (votes == null || votes.Count == 0)
                 {
                     return Json(new { success = false, message = "No votes received." });
                 }
 
-                Console.WriteLine("Received votes:");
-                foreach (var vote in votes)
+                var groupedVotes = votes.GroupBy(v => v.PositionId)
+                                        .ToDictionary(g => g.Key, g => g.Count());
+
+                var positionLimits = _context.Positions
+                    .Where(p => groupedVotes.Keys.Contains(p.PositionId))
+                    .ToDictionary(p => p.PositionId, p => p.MaxCandidates);
+
+                foreach (var kvp in groupedVotes)
                 {
-                    Console.WriteLine($"VoterId: {vote.VoterId}, ElectionId: {vote.ElectionId}, PositionId: {vote.PositionId}, CandidateId: {vote.CandidateId}");
+                    int positionId = kvp.Key;
+                    int selectedCount = kvp.Value;
+
+                    if (positionLimits.TryGetValue(positionId, out int maxAllowed) && selectedCount > maxAllowed)
+                    {
+                        return Json(new { success = false, message = $"You can only select up to {maxAllowed} candidates for this position." });
+                    }
                 }
 
                 foreach (var vote in votes)
@@ -235,6 +247,7 @@ namespace eElection.Controllers
                 return Json(new { success = false, message = $"Error: {ex.Message}" });
             }
         }
+
 
 
         [Authorize(Roles = "Voter")]

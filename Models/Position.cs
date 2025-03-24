@@ -11,6 +11,9 @@ namespace eElection.Models
         [StringLength(200)]
         public string PositionName { get; set; }
 
+        [Required]
+        public int MaxCandidates { get; set; } = 1;
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public virtual ICollection<Candidate>? Candidates { get; set; }
         public virtual ICollection<ElectionTypePositions> ElectionTypePositions { get; set; } = new List<ElectionTypePositions>();

@@ -142,6 +142,7 @@
                                             <thead>
                                                 <tr>
                                                     <th> Position Name </th>
+                                                    <th> Allowed Candidates </th>
                                                     <th> Action </th>
                                                 </tr>
                                             </thead>
@@ -150,6 +151,7 @@
                                                 {
                                                     <tr>
                                                         <td>@position.PositionName</td>
+                                                        <td>@position.MaxCandidates</td>
                                                         <td>
                                                             <button class="btn btn-info btn-sm edit-btn" data-id="@position.PositionId">Edit</button>
                                                             <button class="btn btn-danger btn-sm delete-btn" data-id="@position.PositionId">Delete</button>
@@ -182,6 +184,10 @@
                                         <label for="positionName" class="form-label">Position Name</label>
                                         <input type="text" class="form-control" id="positionName" name="PositionName" required>
                                     </div>
+                                    <div class="mb-3">
+                                        <label for="maxCandidates" class="form-label">Allowed Candidates</label>
+                                        <input type="number" class="form-control" id="maxCandidates" name="AllowedCandidates" required>
+                                    </div>
                                     <button type="submit" class="btn btn-success">Save Position</button>
                                 </form>
                             </div>
@@ -203,6 +209,10 @@
                                     <div class="mb-3">
                                         <label for="editPositionName" class="form-label">Position Name</label>
                                         <input type="text" class="form-control" id="editPositionName" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editMaxCandidates" class="form-label">Allowed Candidates</label>
+                                        <input type="number" class="form-control" id="editMaxCandidates" required>
                                     </div>
                                     <button type="submit" class="btn btn-success">Update Position</button>
                                 </form>
@@ -232,6 +242,7 @@
 
             let formData = {
                 PositionName: document.getElementById("positionName").value,
+                MaxCandidates: document.getElementById("maxCandidates").value,
             };
 
             fetch("/Admin/AddPosition", {
@@ -266,6 +277,7 @@
                         .then(data => {
                             document.getElementById("editPositionId").value = data.positionId;
                             document.getElementById("editPositionName").value = data.positionName;
+                            document.getElementById("editMaxCandidates").value = data.maxCandidates;
                             new bootstrap.Modal(document.getElementById("editPositionModal")).show();
                         });
                 });
@@ -278,6 +290,7 @@
                 let formData = {
                     PositionId: document.getElementById("editPositionId").value,
                     PositionName: document.getElementById("editPositionName").value,
+                    MaxCandidates: document.getElementById("editMaxCandidates").value,
                 };
 
                 fetch("/Admin/EditPosition", {
