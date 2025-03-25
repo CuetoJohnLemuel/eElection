@@ -24,6 +24,7 @@
     <!-- End layout styles -->
     <link rel="shortcut icon" href="~/assets/images/favicon.png" />
     @* <link rel="stylesheet" href="htt://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"> *@
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 </head>
 <body>
@@ -100,6 +101,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" asp-controller="Admin" asp-action="ElectionType">
+                            <span class="menu-title">Election Type</span>
+                            <i class="mdi menu-icon"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" asp-controller="Admin" asp-action="Candidates">
                             <span class="menu-title">Candidate</span>
                             <i class="mdi menu-icon"></i>
@@ -148,10 +155,19 @@
                                                         <td>@electionTypePosition.ElectionTypeName</td>
                                                         <td>@electionTypePosition.Positions</td> <!-- Combined Positions -->
                                                         <td>
-                                                            <button class="btn btn-danger btn-sm delete-btn" data-id="@electionTypePosition.ElectionTypeId">Delete</button>
+                                                            <button class="btn btn-primary btn-sm edit-btn"
+                                                                    data-name="@electionTypePosition.ElectionTypeName">
+                                                                Edit
+                                                            </button>
+
+                                                            <button class="btn btn-danger btn-sm delete-btn"
+                                                                    data-name="@electionTypePosition.ElectionTypeName">
+                                                                Delete
+                                                            </button>
                                                         </td>
                                                     </tr>
                                                 }
+
                                             </tbody>
 
 
@@ -199,6 +215,42 @@
                     </div>
                 </div>
 
+                <!-- Modal for Editing Election Type Position -->
+                <!-- Edit Election Type Modal -->
+                <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editModalLabel">Edit Election Type</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editForm">
+                                    <div class="form-group">
+                                        <label for="editElectionTypeName">Election Type Name</label>
+                                        <input type="text" class="form-control" id="editElectionTypeName" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Select Positions</label>
+                                        <div id="positionCheckboxes">
+                                            @foreach (var position in ViewBag.Positions)
+                                            {
+                                                <div class="form-check">
+                                                    <input class="form-check-input position-checkbox" type="checkbox" id="pos_@position.PositionId" value="@position.PositionId">
+                                                    <label class="form-check-label" for="pos_@position.PositionId">@position.PositionName</label>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 
 
 
@@ -217,64 +269,166 @@
         <!-- page-body-wrapper ends -->
     </div>
     <script>
-             document.getElementById("addElectionTypePositionForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
+                   document.addEventListener("DOMContentLoaded", function () {
+            // Handle Add Election Type Position
+            document.getElementById("addElectionTypePositionForm").addEventListener("submit", async function (event) {
+                event.preventDefault();
 
-            let electionTypeName = document.getElementById("electionTypeName").value.trim();
-            let selectedPositions = [];
+                let electionTypeName = document.getElementById("electionTypeName").value.trim();
+                let selectedPositions = [];
 
-            document.querySelectorAll(".positionCheckbox:checked").forEach((checkbox) => {
-                selectedPositions.push(Number(checkbox.value));
+                document.querySelectorAll(".positionCheckbox:checked").forEach((checkbox) => {
+                    selectedPositions.push(Number(checkbox.value));
+                });
+
+                if (!electionTypeName) {
+                    alert("Please enter an Election Type.");
+                    return;
+                }
+
+                if (selectedPositions.length === 0) {
+                    alert("Please select at least one position.");
+                    return;
+                }
+
+                let formData = {
+                    ElectionTypeName: electionTypeName,
+                    PositionIds: selectedPositions
+                };
+
+                let checkResponse = await fetch(`/Admin/CheckElectionTypeExists?name=${encodeURIComponent(electionTypeName)}`);
+                let checkResult = await checkResponse.json();
+
+                if (checkResult.exists) {
+                    document.getElementById("errorMessage").innerText = "This Election Type already exists.";
+                    return;
+                }
+
+                fetch("/Admin/AddElectionTypePosition", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Positions added successfully!");
+                        location.reload();
+                    } else {
+                        alert("Error: " + data.message);
+                    }
+                })
+                .catch(error => console.error("Fetch Error:", error));
             });
 
-            if (!electionTypeName) {
-                alert("Please enter an Election Type.");
-                return;
-            }
+           
 
-            if (selectedPositions.length === 0) {
-                alert("Please select at least one position.");
-                return;
-            }
-
-            let formData = {
-                ElectionTypeName: electionTypeName,
-                PositionIds: selectedPositions
-            };
-
-            // ✅ Check if the election type already exists before submitting
-            let checkResponse = await fetch(`/Admin/CheckElectionTypeExists?name=${encodeURIComponent(electionTypeName)}`);
-            let checkResult = await checkResponse.json();
-
-            if (checkResult.exists) {
-                document.getElementById("errorMessage").innerText = "This Election Type already exists.";
-                return;
-            }
-
-            console.log("Sending Data:", formData);
-
-            fetch("/Admin/AddElectionTypePosition", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert("Positions added successfully!");
-                    location.reload();
-                } else {
-                    console.error("Server Error:", data.message);
-                    alert("Error: " + data.message);
-                }
-            })
-            .catch(error => console.error("Fetch Error:", error));
         });
 
     </script>
 
+    <script>
+                    $(document).ready(function () {
+            // Handle Edit Button Click
+            $(document).on("click", ".edit-btn", function () {
+                let electionTypeName = $(this).data("name");
+
+                // Fetch election type positions via AJAX
+                $.ajax({
+                    url: "/Admin/GetPositionsByElectionType",
+                    type: "GET",
+                    data: { electionTypeName: electionTypeName },
+                    success: function (response) {
+                        console.log("Response Data:", response); // Debugging output
+
+                        // Set the Election Type Name
+                        $("#editElectionTypeName").val(response.electionTypeName);
+
+                        // Uncheck all first
+                        $(".position-checkbox").prop("checked", false);
+
+                        // Check only the positions associated with this election type
+                        response.positionIds.forEach(function (id) {
+                            $("#pos_" + id).prop("checked", true);
+                        });
+
+                        // Show the modal
+                        $("#editModal").modal("show");
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX Error:", error);
+                    }
+                });
+            });
+
+            // Handle Delete Button Click
+            $(document).on("click", ".delete-btn", function () {
+                let electionTypeName = $(this).data("name");
+
+                if (confirm("Are you sure you want to delete this Election Type?")) {
+                    $.ajax({
+                        url: "/Admin/DeleteElectionType",
+                        type: "POST",
+                        data: { electionTypeName: electionTypeName },
+                        success: function (response) {
+                            console.log("Delete Response:", response); // Debugging output
+
+                            if (response.success) {
+                                alert("Deleted successfully!");
+                                location.reload(); // Refresh page after deletion
+                            } else {
+                                alert("Error: " + response.message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("AJAX Error:", error);
+                        }
+                    });
+                }
+            });
+
+            // Handle Edit Form Submit
+            $("#editForm").submit(function (e) {
+                e.preventDefault();
+
+                let selectedPositions = [];
+                $(".position-checkbox:checked").each(function () {
+                    selectedPositions.push($(this).val());
+                });
+
+                $.ajax({
+                    url: "/Admin/UpdateElectionType",
+                    type: "POST",
+                    data: {
+                        electionTypeName: $("#editElectionTypeName").val(),
+                        selectedPositions: selectedPositions
+                    },
+                    success: function (response) {
+                        console.log("Update Response:", response); // Debugging output
+
+                        if (response.success) {
+                            alert("Updated successfully!");
+                            $("#editModal").modal("hide");
+                            location.reload(); // Refresh the page
+                        } else {
+                            alert("Error: " + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX Error:", error);
+                    }
+                });
+            });
+        });
+
+
+    </script>
+
+   
+    <!-- jQuery -->
+    <!-- Bootstrap -->
 
     <!-- container-scroller -->
     <!-- plugins:js -->

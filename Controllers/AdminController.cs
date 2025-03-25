@@ -243,7 +243,7 @@ namespace eElection.Controllers
             ViewBag.CandidateCount = candidateCount;
             return View();
         }
-        public async Task<IActionResult> ElectionTypePositions()
+        public async Task<IActionResult> ElectionType()
         {
             var groupedElectionTypePositions = await _context.ElectionTypePositions
                 .Include(etp => etp.Position) // ✅ Include Position only
@@ -259,6 +259,18 @@ namespace eElection.Controllers
 
             return View(groupedElectionTypePositions); // ✅ Return ViewModel
         }
+
+        [HttpGet]
+        public IActionResult GetPositionsByElectionType(string electionTypeName)
+        {
+            var positions = _context.ElectionTypePositions
+                .Where(e => e.ElectionTypeName == electionTypeName)
+                .Select(e => e.PositionId)
+                .ToList();
+
+            return Json(new { electionTypeName, positionIds = positions });
+        }
+
 
 
         [HttpGet]
@@ -344,27 +356,75 @@ namespace eElection.Controllers
             }
         }
 
+        [HttpPut]
+        public async Task<IActionResult> EditElectionTypePosition([FromBody] JsonElement requestData)
+        {
+            try
+            {
+                if (!requestData.TryGetProperty("ElectionTypePositionId", out var electionTypePositionIdElement) ||
+                    !requestData.TryGetProperty("ElectionTypeName", out var electionTypeNameElement) ||
+                    !requestData.TryGetProperty("PositionIds", out var positionIdsElement))
+                {
+                    return Json(new { success = false, message = "Invalid input data." });
+                }
 
-        // POST: Admin/DeleteElectionTypePosition
-        [HttpPost]
+                int electionTypePositionId = electionTypePositionIdElement.GetInt32();
+                string electionTypeName = electionTypeNameElement.GetString();
+                var positionIds = positionIdsElement.EnumerateArray().Select(p => p.GetInt32()).ToList();
+
+                var existingPositions = await _context.ElectionTypePositions
+                    .Where(etp => etp.ElectionTypePositionId == electionTypePositionId)
+                    .ToListAsync();
+
+                if (!existingPositions.Any())
+                {
+                    return Json(new { success = false, message = "Election Type Position not found." });
+                }
+
+                // Delete old positions
+                _context.ElectionTypePositions.RemoveRange(existingPositions);
+
+                // Add updated positions
+                var newPositions = positionIds.Select(positionId => new ElectionTypePositions
+                {
+                    ElectionTypePositionId = electionTypePositionId,
+                    ElectionTypeName = electionTypeName,
+                    PositionId = positionId
+                }).ToList();
+
+                _context.ElectionTypePositions.AddRange(newPositions);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Election Type Position updated successfully!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error updating database.", error = ex.Message });
+            }
+        }
+
+        [HttpDelete]
         public async Task<IActionResult> DeleteElectionTypePosition(int id)
         {
             try
             {
-                var electionTypePosition = await _context.ElectionTypePositions.FindAsync(id);
-                if (electionTypePosition == null)
+                var electionTypePositions = _context.ElectionTypePositions
+                    .Where(etp => etp.ElectionTypePositionId == id)
+                    .ToList();
+
+                if (!electionTypePositions.Any())
                 {
-                    return Json(new { success = false, message = "Record not found." });
+                    return Json(new { success = false, message = "Election Type Position not found." });
                 }
 
-                _context.ElectionTypePositions.Remove(electionTypePosition);
+                _context.ElectionTypePositions.RemoveRange(electionTypePositions);
                 await _context.SaveChangesAsync();
 
-                return Json(new { success = true, message = "Position removed from Election Type successfully!" });
+                return Json(new { success = true, message = "Election Type Position deleted successfully!" });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "An error occurred: " + ex.Message });
+                return Json(new { success = false, message = "Error deleting from database.", error = ex.Message });
             }
         }
 
@@ -570,53 +630,93 @@ namespace eElection.Controllers
             }
             return Json(electionType);
         }
-
         [HttpPost]
-        public IActionResult EditElectionType([FromBody] ElectionType model)
+        public IActionResult DeleteElectionType(string electionTypeName)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var positions = _context.ElectionTypePositions
+                .Where(e => e.ElectionTypeName == electionTypeName)
+                .ToList();
 
-            var existingElectionType = _context.ElectionTypes.Find(model.ElectionTypeId);
-            if (existingElectionType == null)
+            if (positions.Any())
             {
-                return NotFound();
-            }
-
-            try
-            {
-                existingElectionType.ElectionTypeName = model.ElectionTypeName;
+                _context.ElectionTypePositions.RemoveRange(positions);
                 _context.SaveChanges();
-                return Json(new { success = true, message = "Election type updated successfully!" });
+                return Json(new { success = true });
             }
-            catch (Exception)
-            {
-                return Json(new { success = false, message = "An error occurred while updating the election type." });
-            }
+
+            return Json(new { success = false, message = "Election Type not found" });
         }
 
+
         [HttpPost]
-        public IActionResult DeleteElectionType(int id)
+        public IActionResult UpdateElectionType(string electionTypeName, List<int> selectedPositions)
         {
-            var electionType = _context.ElectionTypes.Find(id);
-            if (electionType == null)
+            var existingPositions = _context.ElectionTypePositions
+                .Where(e => e.ElectionTypeName == electionTypeName)
+                .ToList();
+
+            _context.ElectionTypePositions.RemoveRange(existingPositions);
+            _context.SaveChanges();
+
+            foreach (var positionId in selectedPositions)
             {
-                return NotFound();
+                _context.ElectionTypePositions.Add(new ElectionTypePositions
+                {
+                    ElectionTypeName = electionTypeName,
+                    PositionId = positionId
+                });
             }
 
-            try
-            {
-                _context.ElectionTypes.Remove(electionType);
-                _context.SaveChanges();
-                return Json(new { success = true, message = "Election type deleted successfully!" });
-            }
-            catch (Exception)
-            {
-                return Json(new { success = false, message = "An error occurred while deleting the election type." });
-            }
+            _context.SaveChanges();
+            return Json(new { success = true });
         }
+
+        //[HttpPost]
+        //public IActionResult EditElectionType([FromBody] ElectionType model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+        //    var existingElectionType = _context.ElectionTypes.Find(model.ElectionTypePositionId);
+        //    if (existingElectionType == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    try
+        //    {
+        //        existingElectionType.ElectionTypeName = model.ElectionTypeName;
+        //        _context.SaveChanges();
+        //        return Json(new { success = true, message = "Election type updated successfully!" });
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return Json(new { success = false, message = "An error occurred while updating the election type." });
+        //    }
+        //}
+
+        //[HttpPost]
+        //public IActionResult DeleteElectionType(int id)
+        //{
+        //    var electionType = _context.ElectionTypes.Find(id);
+        //    if (electionType == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    try
+        //    {
+        //        _context.ElectionTypes.Remove(electionType);
+        //        _context.SaveChanges();
+        //        return Json(new { success = true, message = "Election type deleted successfully!" });
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return Json(new { success = false, message = "An error occurred while deleting the election type." });
+        //    }
+        //}
 
         [HttpPost]
         public IActionResult AddPosition([FromBody] Position model)
@@ -666,6 +766,7 @@ namespace eElection.Controllers
             try
             {
                 existingPosition.PositionName = model.PositionName;
+                existingPosition.MaxCandidates = model.MaxCandidates; // ✅ Add this line
                 _context.SaveChanges();
                 return Json(new { success = true, message = "Position updated successfully!" });
             }
