@@ -271,7 +271,7 @@
 
             function loadCandidates(positionName) {
                 let container = $(`div[data-position='${positionName}']`);
-
+                let electionId = @ViewBag.ElectionId;
                 if (!container.length) {
                     console.warn(`⚠️ Container not found for '${positionName}'`);
                     return;
@@ -280,7 +280,7 @@
                 $.ajax({
                     url: '/User/GetCandidatesByPosition',
                     type: 'GET',
-                    data: { positionName: positionName },
+                    data: { positionName: positionName, electionId: electionId },
                     success: function (response) {
                         container.empty();
 
@@ -338,7 +338,7 @@
                                 });
                             }
                         } else {
-                            container.append('<div class="alert alert-warning">No candidates found</div>');
+                            container.append('<div class="alert alert-warning">No candidates</div>');
                         }
                     },
                     error: function (xhr) {
@@ -429,9 +429,9 @@
                     success: function (response) {
                         $("#submitVote").prop("disabled", false).text("Submit Vote");
 
-                        if (response.success) {
-                            alert("✅ Vote submitted successfully!");
-                            location.reload();
+                       if (response.success) {
+                        alert("✅ Vote submitted successfully!");
+                        window.location.href = "/User/Elections"; // Redirect to elections page
                         } else {
                             alert("❌ Server error: " + (response.message || "Unknown error"));
                             console.error("Server error:", response);

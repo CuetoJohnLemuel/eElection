@@ -25,6 +25,68 @@ namespace eElection.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Voter")]
+        public IActionResult Result(int electionId)
+        {
+            // Step 1: Retrieve the election and its ElectionType(s)
+            var election = _context.Elections
+                .FirstOrDefault(e => e.ElectionId == electionId);
+            if (election == null)
+            {
+                return NotFound("Election not found.");
+            }
+
+            // Step 2: Split ElectionTypes to handle multiple types
+            var electionTypeNames = election.ElectionTypes
+                .Split(',')
+                .Select(et => et.Trim()) // Trim spaces
+                .ToList();
+
+            // Step 3: Get all PositionId values from ElectionTypePositions table that match any ElectionType
+            var positionIds = _context.ElectionTypePositions
+                .Where(etp => electionTypeNames.Contains(etp.ElectionTypeName))
+                .Select(etp => etp.PositionId)
+                .ToList();
+
+            // Step 4: Retrieve positions from Positions table
+            var positions = _context.Positions
+                .Where(p => positionIds.Contains(p.PositionId))
+                .ToList();
+
+            // Step 5: Get candidates with their vote counts
+            var candidateVotes = _context.Candidates
+                .Where(c => c.ElectionId == electionId && positionIds.Contains(c.PositionId))
+                .Select(c => new
+                {
+                    PositionId = c.PositionId,
+                    CandidateName = _context.Voters
+                        .Where(v => v.VoterId == c.VoterId)
+                        .Select(v => $"{v.FirstName} {v.LastName}")
+                        .FirstOrDefault(),
+                   VoteCount = _context.Votes
+                .Count(v => v.CandidateId == c.CandidateId && v.ElectionId == electionId) // ✅ Filter by ElectionId
+        })
+                .ToList();
+
+            // Step 6: Pass data to the view
+            var viewModel = new ElectionResultViewModel
+            {
+                Election = election,
+                Positions = positions,
+                Candidates = candidateVotes
+                    .GroupBy(c => c.PositionId)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.Select(c => $"{c.CandidateName} ({c.VoteCount} Votes)").ToList()
+                    )
+            };
+
+            return View(viewModel);
+        }
+
+
+
+
         [HttpGet]
         public IActionResult GetPositions()
         {
@@ -48,32 +110,6 @@ namespace eElection.Controllers
             return Json(new { success = true, data = positions });
         }
 
-
-
-        //[Authorize(Roles = "Voter")]
-        //public IActionResult Ballot(int? electionId)
-        //{
-        //    if (electionId == null)
-        //    {
-        //        return RedirectToAction("Index"); // Redirect to another page if electionId is missing
-        //    }
-
-        //    var election = _context.Elections
-        //        .Where(e => e.ElectionId == electionId)
-        //        .Select(e => new { e.ElectionId, e.ElectionTypes })
-        //        .FirstOrDefault();
-
-        //    if (election == null)
-        //    {
-        //        return NotFound("Election not found.");
-        //    }
-
-        //    // Store election data in ViewBag
-        //    ViewBag.ElectionId = election.ElectionId;
-        //    ViewBag.ElectionTypes = election.ElectionTypes ?? ""; // Ensure it's not null
-
-        //    return View();
-        //}
         [Authorize(Roles = "Voter")]
         public IActionResult Ballot(int? electionId)
         {
@@ -81,7 +117,21 @@ namespace eElection.Controllers
             {
                 return RedirectToAction("Index"); // Redirect if electionId is missing
             }
+            var voterIdClaim = User.Claims.FirstOrDefault(c => c.Type == "VoterId");
+            if (voterIdClaim == null)
+            {
+                return Unauthorized("Voter ID not found.");
+            }
+            int voterId = int.Parse(voterIdClaim.Value);
+            // Check if the voter already voted in this election
+            bool hasVoted = _context.Votes
+                .Any(v => v.VoterId == voterId && v.ElectionId == electionId);
 
+            if (hasVoted)
+            {
+                TempData["ErrorMessage"] = "You have already voted in this election.";
+                return RedirectToAction("Elections"); // Redirect them back to the listing page
+            }
             var electionData = _context.Elections
                 .Where(e => e.ElectionId == electionId)
                 .Select(e => new
@@ -156,7 +206,7 @@ namespace eElection.Controllers
 
 
         [HttpGet]
-        public IActionResult GetCandidatesByPosition(string positionName)
+        public IActionResult GetCandidatesByPosition(string positionName, int electionId)
         {
             try
             {
@@ -168,12 +218,14 @@ namespace eElection.Controllers
                 var candidates = _context.Candidates
                     .Include(c => c.Voter)
                     .Include(c => c.Position)
-                    .Where(c => c.Position != null && c.Position.PositionName.ToLower() == positionName.ToLower())
+                    .Where(c => c.Position != null
+                        && c.Position.PositionName.ToLower() == positionName.ToLower()
+                        && c.ElectionId == electionId) // ✅ Filter by ElectionId
                     .Select(c => new
                     {
                         c.CandidateId,
                         FullName = c.Voter != null ? $"{c.Voter.FirstName} {c.Voter.LastName}" : "Unknown",
-                        PositionId = c.PositionId // ✅ Ensure PositionId is included
+                        PositionId = c.PositionId
                     })
                     .ToList();
 
@@ -189,6 +241,7 @@ namespace eElection.Controllers
                 return Json(new { success = false, message = $"Error: {ex.Message}" });
             }
         }
+
 
         [HttpPost]
         public IActionResult SubmitVote([FromBody] List<VoteRequest> votes)
