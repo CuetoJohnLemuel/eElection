@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "fx36m3SShOhJljxS/dtnmggk+gPbyCF7wispTuWDoTs=",
+  "Hash": "0C/e0yyswrZzNqxeU3OYXU5qSWnTT/GcwYkBHH/QiAY=",
   "Source": "eElection",
   "BasePath": "_content/eElection",
   "Mode": "Default",
@@ -15408,6 +15408,48 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
+    },
+    {
+      "Identity": "D:\\LEMUEL\\C#Project\\gitEElection\\eElection\\wwwroot\\uploads\\7015168c-b709-4bb4-a444-4609a68b3d54_Screenshot (2).png",
+      "SourceId": "eElection",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\LEMUEL\\C#Project\\gitEElection\\eElection\\wwwroot\\",
+      "BasePath": "_content/eElection",
+      "RelativePath": "uploads/7015168c-b709-4bb4-a444-4609a68b3d54_Screenshot (2)#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "v5epgwap0r",
+      "Integrity": "DXwoNjMK5V+VEuQbdYDpwQTlJ+jc1rWjEXrg1elxvtc=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\7015168c-b709-4bb4-a444-4609a68b3d54_Screenshot (2).png"
+    },
+    {
+      "Identity": "D:\\LEMUEL\\C#Project\\gitEElection\\eElection\\wwwroot\\uploads\\b86b69e3-2603-4b2b-9e20-15d7813f6d88_Screenshot (9).png",
+      "SourceId": "eElection",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\LEMUEL\\C#Project\\gitEElection\\eElection\\wwwroot\\",
+      "BasePath": "_content/eElection",
+      "RelativePath": "uploads/b86b69e3-2603-4b2b-9e20-15d7813f6d88_Screenshot (9)#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "ivsc8lt06m",
+      "Integrity": "0pY3wfxfi7vxgWKV8U6Y3LMGnHGE8U7XfgSPWpuKSCM=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\b86b69e3-2603-4b2b-9e20-15d7813f6d88_Screenshot (9).png"
     }
   ],
   "Endpoints": [
@@ -100170,6 +100212,170 @@
         {
           "Name": "integrity",
           "Value": "sha256-1HkjQSVuV0/ji/X/lGeDTHeagBS0BwopMrHDQuwqgtU="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/7015168c-b709-4bb4-a444-4609a68b3d54_Screenshot (2).png",
+      "AssetFile": "D:\\LEMUEL\\C#Project\\gitEElection\\eElection\\wwwroot\\uploads\\7015168c-b709-4bb4-a444-4609a68b3d54_Screenshot (2).png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "195258"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"DXwoNjMK5V+VEuQbdYDpwQTlJ+jc1rWjEXrg1elxvtc=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 28 Mar 2025 07:15:35 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-DXwoNjMK5V+VEuQbdYDpwQTlJ+jc1rWjEXrg1elxvtc="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/7015168c-b709-4bb4-a444-4609a68b3d54_Screenshot (2).v5epgwap0r.png",
+      "AssetFile": "D:\\LEMUEL\\C#Project\\gitEElection\\eElection\\wwwroot\\uploads\\7015168c-b709-4bb4-a444-4609a68b3d54_Screenshot (2).png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "195258"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"DXwoNjMK5V+VEuQbdYDpwQTlJ+jc1rWjEXrg1elxvtc=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 28 Mar 2025 07:15:35 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "v5epgwap0r"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/7015168c-b709-4bb4-a444-4609a68b3d54_Screenshot (2).png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-DXwoNjMK5V+VEuQbdYDpwQTlJ+jc1rWjEXrg1elxvtc="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/b86b69e3-2603-4b2b-9e20-15d7813f6d88_Screenshot (9).ivsc8lt06m.png",
+      "AssetFile": "D:\\LEMUEL\\C#Project\\gitEElection\\eElection\\wwwroot\\uploads\\b86b69e3-2603-4b2b-9e20-15d7813f6d88_Screenshot (9).png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "354921"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"0pY3wfxfi7vxgWKV8U6Y3LMGnHGE8U7XfgSPWpuKSCM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 28 Mar 2025 07:15:35 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ivsc8lt06m"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/b86b69e3-2603-4b2b-9e20-15d7813f6d88_Screenshot (9).png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-0pY3wfxfi7vxgWKV8U6Y3LMGnHGE8U7XfgSPWpuKSCM="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/b86b69e3-2603-4b2b-9e20-15d7813f6d88_Screenshot (9).png",
+      "AssetFile": "D:\\LEMUEL\\C#Project\\gitEElection\\eElection\\wwwroot\\uploads\\b86b69e3-2603-4b2b-9e20-15d7813f6d88_Screenshot (9).png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "354921"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"0pY3wfxfi7vxgWKV8U6Y3LMGnHGE8U7XfgSPWpuKSCM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 28 Mar 2025 07:15:35 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-0pY3wfxfi7vxgWKV8U6Y3LMGnHGE8U7XfgSPWpuKSCM="
         }
       ]
     }

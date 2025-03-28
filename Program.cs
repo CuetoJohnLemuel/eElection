@@ -2,6 +2,7 @@ using eElection.Data;
 using eElection.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 
 namespace eElection
 {
@@ -28,6 +29,7 @@ namespace eElection
             builder.Services.AddSession();
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<EmailService>();
+            //builder.Logging.AddConsole();
 
             var app = builder.Build();
 
@@ -38,7 +40,13 @@ namespace eElection
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads")),
+                RequestPath = "/uploads"
+            });
             app.UseHttpsRedirection();
             app.UseRouting();
 
