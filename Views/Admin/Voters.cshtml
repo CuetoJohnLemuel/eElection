@@ -23,6 +23,8 @@
     <link rel="stylesheet" href="~/assets/css/style.css">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="~/assets/images/favicon.png" />
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 <body>
     <div class="container-scroller">
@@ -151,7 +153,10 @@
                                                     <th> Email </th>
                                                     <th> Phone </th>
                                                     <th> Address </th>
-                                                    @* <th> Action </th> *@
+                                                    <th> Government Id </th>
+                                                    <th> Voters Id </th>
+                                                    <th> Status </th>
+                                                    <th> Action </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -162,10 +167,41 @@
                                                         <td>@voter.Email</td>
                                                         <td>@voter.Phone</td>
                                                         <td>@voter.Address</td>
-                                                        @* <td> *@
-                                                        @*     <button class="btn btn-warning btn-sm edit-btn" data-id="@voter.VoterId">Edit</button> *@
-                                                        @*     <button class="btn btn-danger btn-sm delete-btn" data-id="@voter.VoterId">Delete</button> *@
-                                                        @* </td> *@
+                                                        <td>
+                                                            @if (!string.IsNullOrEmpty(voter.GovernmentPhotoId))
+                                                            {
+                                                                <button class="btn btn-info btn-sm view-image-btn"
+                                                                        data-img="@voter.GovernmentPhotoId"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#imageModal">
+                                                                    View
+                                                                </button>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span>N/A</span>
+                                                            }
+                                                        </td>
+                                                        <td>
+                                                            @if (!string.IsNullOrEmpty(voter.VoterPhotoId))
+                                                            {
+                                                                <button class="btn btn-info btn-sm view-image-btn"
+                                                                        data-img="@voter.VoterPhotoId"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#imageModal">
+                                                                    View
+                                                                </button>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span>N/A</span>
+                                                            }
+                                                        </td>
+                                                        <td>@voter.Status</td>
+                                                        <td>
+                                                            <button class="btn btn-success btn-sm approve-btn" data-id="@voter.VoterId">Approve</button>
+                                                            <button class="btn btn-danger btn-sm reject-btn" data-id="@voter.VoterId">Reject</button>
+                                                        </td>
 
                                                     </tr>
                                                 }
@@ -180,6 +216,20 @@
                 </div>
 
 
+                <!-- Modal for displaying images -->
+                <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <img id="modalImage" src="" class="img-fluid" alt="Voter Image">
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- Modal for Adding Election -->
                 <div class="modal fade" id="addAnnouncementModal" tabindex="-1" aria-labelledby="addAnnouncementModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -253,6 +303,47 @@
         <!-- page-body-wrapper ends -->
     </div>
 
+    <script>
+        // Handle View button click to show the image
+        document.querySelectorAll('.view-image-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                let imgSrc = this.getAttribute('data-img');
+                document.getElementById('modalImage').src = imgSrc;
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $(".approve-btn").click(function () {
+                let voterId = $(this).data("id");
+
+                $.post("/Admin/UpdateVoterStatus", { voterId: voterId, status: "Approved" }, function (response) {
+                    if (response.success) {
+                        location.reload(); // Refresh the page after successful update
+                    } else {
+                        alert(response.message);
+                    }
+                });
+            });
+
+            $(".reject-btn").click(function () {
+                let voterId = $(this).data("id");
+                let rejectionReason = prompt("Enter rejection reason:");
+
+                if (rejectionReason !== null && rejectionReason.trim() !== "") {
+                    $.post("/Admin/UpdateVoterStatus", { voterId: voterId, status: "Rejected", rejectionReason: rejectionReason }, function (response) {
+                        if (response.success) {
+                            location.reload(); // Refresh the page
+                        } else {
+                            alert(response.message);
+                        }
+                    });
+                } else {
+                    alert("Rejection reason is required.");
+                }
+            });
+        });
+    </script>
 
     <script>
         document.getElementById("addAnnouncementForm").addEventListener("submit", function(event) {

@@ -62,40 +62,71 @@
     <main class="main">
         <section id="contact" class="contact section">
             <div class="container">
-                <h2>Profile</h2>
+                <h2 class="text-center mb-4">Profile</h2>
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">User Profile</h5>
-                        <div class="row gy-4">
+                        <h5 class="card-title text-center">User Profile</h5>
+                        <div class="row gy-3">
                             <div class="col-md-6">
-                                <label class="pb-2">First Name</label>
+                                <label class="fw-bold">First Name</label>
                                 <p class="form-control-plaintext">@Model.FirstName</p>
                             </div>
                             <div class="col-md-6">
-                                <label class="pb-2">Last Name</label>
+                                <label class="fw-bold">Last Name</label>
                                 <p class="form-control-plaintext">@Model.LastName</p>
                             </div>
                             <div class="col-md-6">
-                                <label class="pb-2">Email</label>
+                                <label class="fw-bold">Email</label>
                                 <p class="form-control-plaintext">@Model.Account.Email</p>
                             </div>
                             <div class="col-md-6">
-                                <label class="pb-2">Phone</label>
+                                <label class="fw-bold">Phone</label>
                                 <p class="form-control-plaintext">@Model.Phone</p>
                             </div>
                             <div class="col-md-12">
-                                <label class="pb-2">Address</label>
+                                <label class="fw-bold">Address</label>
                                 <p class="form-control-plaintext">@Model.Address</p>
                             </div>
                             <div class="col-md-6">
-                                <label class="pb-2">Birthdate</label>
+                                <label class="fw-bold">Birthdate</label>
                                 <p class="form-control-plaintext">@Model.Birthdate</p>
                             </div>
                             <div class="col-md-6">
-                                <label class="pb-2">Gender</label>
+                                <label class="fw-bold">Gender</label>
                                 <p class="form-control-plaintext">@Model.Gender</p>
                             </div>
+
+                            <!-- Government ID & Voter ID Photos -->
+                            <div class="col-md-6 d-flex flex-column align-items-center">
+                                <label class="fw-bold">Government ID</label>
+                                <img src="@Url.Content(Model.GovernmentPhotoId)" class="img-fluid rounded border p-1" alt="Government ID" width="150">
+                            </div>
+                            <div class="col-md-6 d-flex flex-column align-items-center">
+                                <label class="fw-bold">Voter ID</label>
+                                <img src="@Url.Content(Model.VoterPhotoId)" class="img-fluid rounded border p-1" alt="Voter ID" width="150">
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-md-12 text-center mt-4">
+                                <label class="fw-bold">Status</label>
+                                <p class="form-control-plaintext fw-bold text-@((Model.Status == "Approved") ? "success" : (Model.Status == "Rejected") ? "danger" : "warning")">
+                                    @Model.Status
+                                </p>
+                            </div>
+
+                            <!-- Rejection Message (Only if Rejected) -->
+                            @if (Model.Status == "Rejected" && !string.IsNullOrEmpty(Model.RejectionReason))
+                            {
+                                <div class="col-md-12 text-center mt-2">
+                                    <label class="fw-bold text-danger">Rejection Message</label>
+                                    <p class="form-control-plaintext text-danger">
+                                        @Model.RejectionReason
+                                    </p>
+                                </div>
+                            }
                         </div>
+
+                        <!-- Update Profile Button -->
                         <div class="text-center mt-4">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateProfileModal">
                                 Update Profile
@@ -104,7 +135,8 @@
                     </div>
                 </div>
             </div>
-        </section><!-- /Contact Section -->
+        </section>
+
     </main>
     <!-- Update Profile Modal -->
     <div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileModalLabel" aria-hidden="true">
@@ -115,7 +147,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="updateProfileForm" >
+                    <form id="updateProfileForm" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="editFirstName" class="form-label">First Name</label>
                             <input type="text" class="form-control" id="editFirstName" value="@Model.FirstName" required>
@@ -150,7 +182,15 @@
                                 <option value="Female" selected="@(Model.Gender == "Female")">Female</option>
                             </select>
                         </div>
+                        <div class="mb-3">
+                            <label for="governmentPhotoId" class="form-label">Government ID</label>
+                            <input type="file" class="form-control" id="governmentPhotoId" name="GovernmentPhotoId">
+                        </div>
 
+                        <div class="mb-3">
+                            <label for="voterPhotoId" class="form-label">Voter ID</label>
+                            <input type="file" class="form-control" id="voterPhotoId" name="VoterPhotoId">
+                        </div>
                         <div class="text-center">
                             <button type="submit" class="btn btn-primary">Save Changes</button>
                         </div>
@@ -177,28 +217,37 @@
     <script>
         document.getElementById("updateProfileForm").addEventListener("submit", function (event) {
             event.preventDefault();
-            const formData = {
-                VoterId: @Model.VoterId, // Ensure this is available in your model
-                FirstName: document.getElementById("editFirstName").value,
-                LastName: document.getElementById("editLastName").value,
-                Email: document.getElementById("editEmail").value,
-                Phone: document.getElementById("editPhone").value,
-                Address: document.getElementById("editAddress").value,
-                Birthdate: document.getElementById("editBirthdate").value,
-                Gender: document.getElementById("editGender").value
-            };
+
+            let formData = new FormData();
+            formData.append("VoterId", @Model.VoterId);
+            formData.append("FirstName", document.getElementById("editFirstName").value);
+            formData.append("LastName", document.getElementById("editLastName").value);
+            formData.append("Email", document.getElementById("editEmail").value);
+            formData.append("Phone", document.getElementById("editPhone").value);
+            formData.append("Address", document.getElementById("editAddress").value);
+            formData.append("Birthdate", document.getElementById("editBirthdate").value);
+            formData.append("Gender", document.getElementById("editGender").value);
+
+            // Append files if selected
+            let governmentPhoto = document.getElementById("governmentPhotoId").files[0];
+            let voterPhoto = document.getElementById("voterPhotoId").files[0];
+
+            if (governmentPhoto) {
+                formData.append("GovernmentPhotoId", governmentPhoto);
+            }
+            if (voterPhoto) {
+                formData.append("VoterPhotoId", voterPhoto);
+            }
+
             fetch('/User/UpdateProfile', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
+                body: formData
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     alert("Profile updated successfully!");
-                    location.reload(); // Refresh page to show updated details
+                    location.reload();
                 } else {
                     alert("Failed to update profile. " + data.message);
                 }
@@ -209,5 +258,6 @@
             });
         });
     </script>
+
 </body>
 </html>

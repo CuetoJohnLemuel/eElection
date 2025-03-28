@@ -66,6 +66,32 @@ namespace eElection.Controllers
             return View(electionTypes);
         }
 
+        [HttpPost]
+        public IActionResult UpdateVoterStatus(int voterId, string status, string? rejectionReason)
+        {
+            var voter = _context.Voters.FirstOrDefault(v => v.VoterId == voterId);
+
+            if (voter == null)
+            {
+                return Json(new { success = false, message = "Voter not found." });
+            }
+
+            voter.Status = status;
+
+            if (status == "Rejected")
+            {
+                voter.RejectionReason = rejectionReason; // Save rejection feedback
+            }
+            else
+            {
+                voter.RejectionReason = null; // Clear previous rejection reason if approving
+            }
+
+            _context.SaveChanges();
+
+            return Json(new { success = true, message = "Voter status updated successfully." });
+        }
+
         [Authorize(Roles = "Admin")]
         public IActionResult Candidates()
         {
@@ -183,7 +209,9 @@ namespace eElection.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Voters()
         {
-            var voters = _context.Voters.ToList(); // Retrieve all voters from the database
+            var voters = _context.Voters
+                .Where(v => v.Status == "Verified" || v.Status == "Approved" || v.Status == "Rejected")
+                .ToList();
             return View(voters);
         }
 

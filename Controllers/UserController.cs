@@ -123,6 +123,18 @@ namespace eElection.Controllers
                 return Unauthorized("Voter ID not found.");
             }
             int voterId = int.Parse(voterIdClaim.Value);
+
+            // Check if the voter's status is "Approved" in the Voters table
+            var voterStatus = _context.Voters
+                .Where(v => v.VoterId == voterId)
+                .Select(v => v.Status)
+                .FirstOrDefault();
+
+            if (voterStatus != "Approved")
+            {
+                TempData["ErrorMessage"] = "You need to be approved by an admin first.";
+                return RedirectToAction("Elections"); // Redirect to elections page
+            }
             // Check if the voter already voted in this election
             bool hasVoted = _context.Votes
                 .Any(v => v.VoterId == voterId && v.ElectionId == electionId);
@@ -401,8 +413,8 @@ namespace eElection.Controllers
             // Pass the voter data to the view
             return View(voter);
         }
-       [HttpPost]
-        public IActionResult UpdateProfile([FromBody] Voter updatedVoter)
+        [HttpPost]
+        public IActionResult UpdateProfile([FromForm] Voter updatedVoter, IFormFile? GovernmentPhotoId, IFormFile? VoterPhotoId)
         {
             if (updatedVoter == null)
             {
@@ -422,16 +434,45 @@ namespace eElection.Controllers
                 voter.LastName = updatedVoter.LastName;
                 voter.Phone = updatedVoter.Phone;
                 voter.Address = updatedVoter.Address;
-                voter.Birthdate = updatedVoter.Birthdate; // Ensure birthdate is not null
-                voter.Gender = updatedVoter.Gender; // Ensure gender is updated
+                voter.Birthdate = updatedVoter.Birthdate;
+                voter.Gender = updatedVoter.Gender;
 
-
-                // Check if email needs to be updated in the Account table
-                // var account = _context.Account.FirstOrDefault(a => a.AccountId == voter.AccountId);
                 if (voter.Account != null)
                 {
                     voter.Account.Email = updatedVoter.Email;
                 }
+
+                string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+
+                // Save Government Photo ID if uploaded
+                if (GovernmentPhotoId != null && GovernmentPhotoId.Length > 0)
+                {
+                    string governmentFileName = Guid.NewGuid().ToString() + Path.GetExtension(GovernmentPhotoId.FileName);
+                    string governmentFilePath = Path.Combine(uploadsFolder, governmentFileName);
+
+                    using (var stream = new FileStream(governmentFilePath, FileMode.Create))
+                    {
+                        GovernmentPhotoId.CopyTo(stream);
+                    }
+
+                    voter.GovernmentPhotoId = "/uploads/" + governmentFileName;
+                }
+
+                // Save Voter Photo ID if uploaded
+                if (VoterPhotoId != null && VoterPhotoId.Length > 0)
+                {
+                    string voterFileName = Guid.NewGuid().ToString() + Path.GetExtension(VoterPhotoId.FileName);
+                    string voterFilePath = Path.Combine(uploadsFolder, voterFileName);
+
+                    using (var stream = new FileStream(voterFilePath, FileMode.Create))
+                    {
+                        VoterPhotoId.CopyTo(stream);
+                    }
+
+                    voter.VoterPhotoId = "/uploads/" + voterFileName;
+                }
+                // Update Status to Verified
+                voter.Status = "Verified";
                 _context.SaveChanges();
 
                 return Json(new { success = true, message = "Profile updated successfully." });
@@ -441,6 +482,7 @@ namespace eElection.Controllers
                 return Json(new { success = false, message = "Error updating profile: " + ex.Message });
             }
         }
+
 
     }
 }
